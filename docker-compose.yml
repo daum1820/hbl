@@ -1,0 +1,52 @@
+# Use root/example as user/password credentials
+version: '3.8'
+
+services:
+  ui:
+    image: hbl-react-app
+    build:
+      context: ./ui
+      target: production
+      dockerfile: ./Dockerfile
+    environment: 
+      REACT_APP_BASE_URL: http://api:3000/
+    ports:
+      - '80:80'
+    depends_on:
+      - api
+  api:
+    image: hbl-ws
+    build:
+      context: ./api
+      target: production
+      dockerfile: ./Dockerfile
+    environment: 
+      MONGODB_URI: mongodb://mongo:27017/hbl-db
+      JWT_ACCESS_TOKEN_EXPIRATION_TIME: 5m
+      JWT_SECRET_KEY: HBLS3Kr3tK3y
+      JWT_REFRESH_TOKEN_EXPIRATION_TIME: 8h
+    ports:
+      - '3000:3000'
+    depends_on:
+      - mongo
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - hbl-mongo-vol:/data/db
+      - hbl-mongo-config-vol:/data/configdb
+volumes:
+  hbl-mongo-vol:
+    external: true
+  hbl-mongo-config-vol:
+    external: true
