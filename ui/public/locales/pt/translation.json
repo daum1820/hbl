@@ -1,0 +1,349 @@
+{
+  "company": {
+    "name": "HBL Soluções"
+  },
+  "format": {
+    "date": "DD/MM/YYYY",
+    "dateTime": "DD/MM/YYYY HH:mm"
+  },
+  "menu": {
+    "dashboard": "Dashboard",
+    "categories" : "Categorias",
+    "profile": "Meu Perfil",
+    "logout": "Sair",
+    "users": "Usuários",
+    "products": "Produtos e Serviços",
+    "customers": "Clientes",
+    "invoices": "Faturas",
+    "orders": "Ordens de Serviço"
+  },
+  "message" : {
+    "user" : {
+      "save.success": "Usuário foi salvo com sucesso",
+      "security.success": "Segurança e permissões do usuário foram salvas com sucesso",
+      "password.success": "Senha do usuário foi alterada com sucesso",
+      "remove.success": "Usuário foi removido com sucesso"
+    },
+    "category" : {
+      "save.success": "Categoria foi salva com sucesso",
+      "remove.success": "Categoria foi removida com sucesso"
+    },
+    "product" : {
+      "save.success": "Produto foi salvo com sucesso",
+      "remove.success": "Produto foi removido com sucesso"
+    },
+    "invoice" : {
+      "save.success": "Fatura foi salva com sucesso",
+      "remove.success": "Fatura foi removida com sucesso",
+      "status.success": "Status da fatura foi salvo com sucesso",
+      "item": {
+        "remove.success": "Despesa foi removida com sucesso",
+        "add.success": "Despesa foi adicionada com sucesso"
+      }
+    },
+    "order" : {
+      "save.success": "OS foi salva com sucesso",
+      "remove.success": "OS foi removida com sucesso",
+      "status.success": "Status da OS foi salvo com sucesso"
+    },
+    "customer" : {
+      "save.success": "Cliente foi salvo com sucesso",
+      "status.success": "Status do cliente foi salvo com sucesso",
+      "remove.success": "Cliente foi removido com sucesso",
+      "printer": {
+        "remove.success": "Impressora foi removido com sucesso",
+        "add.success": "Impressora foi adicionada com sucesso"
+      }
+    }
+  },
+  "label": {
+    "my": {
+      "orders": "Minhas OS em aberto"
+    },
+    "action" : {
+      "activate": "Ativar",
+      "inactivate": "Desativar",
+      "reopen": "Re-abrir fatura",
+      "close": "Faturar",
+      "order" :{
+        "open": "Re-abrir OS",
+        "wip": "Iniciar atendimento",
+        "close": "Finalizar atendimento"
+      }
+    }, 
+    "name": "Nome",
+    "lastname": "Sobrenome",
+    "email": "E-mail",
+    "search": "Procurar",
+    "address": "Endereço",
+    "city": "Cidade",
+    "state": "Estado",
+    "phone": "Telefone",
+    "position": "Cargo",
+    "zipcode": "CEP",
+    "model": "Modelo",
+    "code": "Código",
+    "dateOfBirth": "Data de nascimento",
+    "description": "Descrição",
+    "serialNumber": "Número de série",
+    "printers": "Impressoras",
+    "loading": "Carregando...",
+    "services": "Serviços",
+    "quantity": "Quantidade",
+    "price" : "Valor Unitário",
+    "product": {
+      "service": "Produtos/Serviços",
+      "text": "Produtos",
+      "details": "Detalhes do produto",
+      "model.code": "Código/Modelo",
+      "type" : {
+        "text" : "Tipo de produto",
+        "printer": "Impressora",
+        "service": "Serviço",
+        "printers": "Impressoras",
+        "services": "Serviços"
+      },
+      "brand": "Fabricante"
+    },
+    "order": {
+      "text": "OS",
+      "open": "OS em aberto",
+      "new": "Nova OS",
+      "without.user": "OS sem Técnico",
+      "code": "Número da OS",
+      "technicalUser": "Técnico",
+      "details": "Detalhes da OS",
+      "pb": "Atual P/B",
+      "color": "Atual Color",
+      "nos": "N.OS",
+      "action": "Ação",
+      "notes": "Observaçōes",
+      "points": "Pendências",
+      "startedAt": "Atendimento iniciado em",
+      "finishedAt": "Atendimento finalizado em",
+      "status" : {
+        "text": "Status da OS",
+        "open": "Em aberto",
+        "wip": "Em atendimento",
+        "closed": "Finalizada"
+      }
+    },
+    "invoice": {
+      "text": "Fatura",
+      "new" : "Nova Fatura",
+      "open": "Faturas em aberto",
+      "cash": "Valor total a receber",
+      "details": "Detalhes da Fatura",
+      "code": "Número da fatura",
+      "dueDate": "Vencimento em",
+      "createdAt": "Emitida em",
+      "total": "Total da fatura",
+      "customer": "Cliente",
+      "discount": "Descontos",
+      "amountPaid": "Total pago",
+      "amountItems": "Valor total dos items",
+      "amountToPay": "Valor total a pagar",
+      "item": {
+        "number": "Número do item",
+        "text": "Despesas da fatura",
+        "add": "Novas despesas",
+        "price": "Valor total da despesa"
+      },
+      "status" : {
+        "text": "Status da fatura",
+        "open": "Em aberto",
+        "closed": "Faturado"
+      }
+    },
+    "security":  {
+      "text" : "Segurança",
+      "roles": "Segurança e permissões"
+    },
+    "user": {
+      "text": "Usuário",
+      "name": "Nome de usuário",
+      "add": "Adicionar usuário",
+      "list": "Ver usuários",
+      "details": "Detalhes do usuário",
+      "active": "Usuários ativos"
+    },
+    "password": {
+      "text": "Senha",
+      "confirmation": "Confirme sua senha",
+      "management" :  "Gerenciamento da senha",
+      "change" :  "Alterar senha no próximo login",
+      "update" :  "Sua senha deve ser atualizada"
+    },
+    "profile": {
+      "text": "Meu Perfil",
+      "info": "Complete o seu perfil"
+    },
+    "status": {
+      "text": "Status",
+      "active": "Ativo",
+      "inactive": "Desativado"
+    },
+    "remove": {
+      "hint": "Deseja realmente remover este item?"
+    },
+    "role": {
+      "user" : "Usuário",
+      "moderator" : "Moderador",
+      "admin" : "Administrador"
+    },
+    "greetings": {
+      "text" : "Bem-vindo <1>{{fullName}}</1>,"
+    },
+    "category": {
+      "text": "Categoria",
+      "details": "Detalhes da categoria",
+      "code" : "Código da categoria",
+      "type" : {
+        "text": "Tipo da categoria",
+        "problem": "Sintoma",
+        "brand": "Empresa",
+        "producttype": "Produto"
+      }
+    },
+    "customer": {
+      "text": "Cliente",
+      "name": "Nome do cliente",
+      "printer": "Impressora"
+    },
+    "customers": {
+      "text": "Clientes ativos",
+      "details": "Detalhes do cliente",
+      "name" : "Nome fantasia",
+      "fullName" : "Razão Social",
+      "contactName" : "Nome do contato",
+      "contactEmail" : "E-mail do contato",
+      "contactPhone" : "Telefone do contato",
+      "registrationNr": "CNPJ/CPF",
+      "printer": {
+        "add": "Cadastrar Impressora",
+        "model": "Modelo da impressora"
+      }
+    },
+    "duedate": {
+      "days10": "10 dias",
+      "days15": "15 dias",
+      "days20": "20 dias",
+      "days30": "30 dias",
+      "days60": "60 dias",
+      "days90": "90 dias"
+    }
+  },
+  "icon" : {
+    "role": {
+      "user" : "shield",
+      "moderator" : "verified_user",
+      "admin" : "local_police"
+    }
+  },
+  "button": {
+    "login": "Acessar",
+    "password": {
+      "change": "Alterar senha"
+    },
+    "add" : {
+      "printer": "Adicionar impressora",
+      "invoice" : {
+        "item": "Adiconar despesa"
+      }
+    },
+    "save": {
+      "text": "Salvar",
+      "profile": "Salvar perfil",
+      "user": "Salvar usuário",
+      "category": "Salvar categoria",
+      "product": "Salvar produto",
+      "customer": "Salvar cliente",
+      "invoice": "Salvar fatura",
+      "order": "Salvar OS"
+    },
+    "create":{
+      "invoice" : "Gerar fatura",
+      "order": "Abrir OS"
+    }
+  },
+  "title": {
+    "details": {
+      "text" : "Detalhes"
+    }
+  },
+  "tooltip": {
+    "item": {
+      "view": "Ver",
+      "add": "Adicionar",
+      "list": "Ver detalhes",
+      "hide": "Esconder detalhes"
+    },
+    "filter" :{
+      "apply": "Aplicar filtro",
+      "remove": "Remover filtro"
+    }
+  },
+  "export": {
+    "pdf": {
+      "text" : "Exportar em PDF",
+      "invoice": "Exportar fatura em PDF",
+      "order": "Exportar ordem de serviço em PDF"
+    }
+  },
+  "error": {
+    "model" : {
+      "type.exists": "Este código já existe para este tipo de produto",
+      "brand.exists": "Este modelo já existe para este fabricante"
+    },
+    "field": {
+      "required": "Este campo é obrigatório",
+      "positive": "O valor deve ser maior que 0 (zero)",
+      "number": "O valor deve ser numérico",
+      "invalid.format" : "Este format não é válido",
+      "length": "Este campo deve possuir 8 ou mais caracteres",
+      "minDate": "A data final do atendimento deve ser posterior ao início do atendimento"
+    },
+    "email": {
+      "invalid": "Este endereço de e-mail não é válido",
+      "already.exists": "Este endereço de e-mail não está disponível"
+    },
+    "password": {
+      "match": "As senhas não são indênticas"
+    },
+    "category": {
+      "empty": "Nenhuma categoria foi encontrada",
+      "problem.empty": "Nenhum sintoma foi encontrado",
+      "name.type.exists": "Esta categoria já existe para este tipo de categoria"
+    },
+    "customer": {
+      "empty": "Nenhum cliente foi encontrado",
+      "registrationNr.exists": "Este CNPJ/CPF já está cadastro",
+      "printers.empty": "Nenhuma impressora encontrada"
+    },
+    "serialNumber": {
+      "exists" : "Este número de série já foi cadastrado no sistema"
+    },
+    "product": {
+      "empty": "Nenhuma impressora foi encontrada"
+    },
+    "invoice": {
+      "empty": "Nenhuma fatura foi encontrada",
+      "item.empty": "Nenhum despesa foi encontrada nesta fatura"
+    },
+    "order": {
+      "empty": "Nenhuma OS foi encontrada"
+    },
+    "printer": {
+      "empty": "Nenhum produto ou serviço foi encontrado",
+      "model.exists": "Este código/modelo já existe para este fabricante"
+    },
+    "user": {
+      "empty": "Nenhum usuário foi encontrado",
+      "not.found": "Usuário não existe",
+      "inactive": "Usuário inativo",
+      "password.invalid": "Senha inválida",
+      "already.exists": "Este nome de usuário não está disponível",
+      "logout": "Você não tem acesso a esta página ou sua sessāo expirou. Você será redirecionado para a tela de login em {{time}} segundos"
+    }
+  }
+}
