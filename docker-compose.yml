@@ -3,7 +3,11 @@ version: '3.8'
 
 services:
   ui:
-    image: daum1820/hbl:ui.0.1.12
+    image: hbl-react-app
+    build:
+      context: ./ui
+      target: production
+      dockerfile: ./Dockerfile
     environment: 
       REACT_APP_BASE_URL: http://api:3000/
     ports:
@@ -11,7 +15,11 @@ services:
     depends_on:
       - api
   api:
-    image: daum1820/hbl:api.0.1.12
+    image: hbl-ws
+    build:
+      context: ./api
+      target: production
+      dockerfile: ./Dockerfile
     environment: 
       MONGODB_URI: mongodb://mongo:27017/hbl-db
       JWT_ACCESS_TOKEN_EXPIRATION_TIME: 5m
