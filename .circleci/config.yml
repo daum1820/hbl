@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   aws-ecr: circleci/aws-ecr@7.2.0
+  aws-ecs: circleci/aws-ecs@2.2.1
 workflows:
   build_and_push_image:
     jobs:
@@ -32,3 +33,8 @@ workflows:
           repo: hbl-api
           skip-when-tags-exist: false
           tag: 'api-latest'
+      - aws-ecs/deploy-service-update:
+          cluster-name: 'hbl-prod-cluster'
+          family: 'hbl-app-service'
+          requires:
+            - aws-ecr/build-and-push-image
