@@ -12,6 +12,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
   const configService: ConfigService = app.get(ConfigService);
   app.enableCors();
+  app.setGlobalPrefix('api');
   await app.listen(configService.get<string>('PORT') || 3000);
 
   if (module.hot) {
