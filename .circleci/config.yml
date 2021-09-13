@@ -6,6 +6,7 @@ workflows:
   build_and_push_image:
     jobs:
       - aws-ecr/build-and-push-image:
+          name: ui-app
           account-url: AWS_ECR_ACCOUNT_URL_HBL
           aws-access-key-id: ACCESS_KEY_ID_HBL
           aws-secret-access-key: SECRET_ACCESS_KEY_HBL
@@ -20,6 +21,7 @@ workflows:
           skip-when-tags-exist: false
           tag: 'ui-latest'
       - aws-ecr/build-and-push-image:
+          name: api-app
           account-url: AWS_ECR_ACCOUNT_URL_HBL
           aws-access-key-id: ACCESS_KEY_ID_HBL
           aws-secret-access-key: SECRET_ACCESS_KEY_HBL
@@ -37,4 +39,5 @@ workflows:
           cluster-name: 'hbl-prod-cluster'
           family: 'hbl-app-service'
           requires:
-            - aws-ecr/build-and-push-image
+            - ui-app
+            - api-app
