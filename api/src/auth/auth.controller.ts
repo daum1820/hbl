@@ -28,4 +28,10 @@ export class AuthController {
     this.logger.log(`< refreshToken - ${JSON.stringify(accessToken)}`);
     return { accessToken };
   }
+
+  @Public()
+  @Post('health_check')
+  async healthCheck() {
+    return "OK";
+  }
 }
