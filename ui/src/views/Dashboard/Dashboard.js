@@ -75,6 +75,18 @@ export default function Dashboard() {
   return (
     <div>
       <GridContainer>
+        <DisplayWhen roles={['Admin']}>
+          <GridItem xs={12} sm={6} md={4}>            
+            <InvoiceCreate
+              color='danger'/>
+          </GridItem> 
+        </DisplayWhen>
+        <DisplayWhen roles={['Admin', 'Moderator']}>
+          <GridItem xs={12} sm={6} md={4}>            
+            <OrderCreate
+              color='warning'/>
+          </GridItem> 
+        </DisplayWhen>
         <GridItem xs={12} sm={12} md={baseMd}>
           <GridContainer direction={direction}>
             <DisplayWhen roles={['Admin']}>
@@ -123,18 +135,6 @@ export default function Dashboard() {
             </GridItem>
           </GridContainer>
         </GridItem>
-        <DisplayWhen roles={['Admin']}>
-          <GridItem xs={12} sm={6} md={4}>            
-            <InvoiceCreate
-              color='danger'/>
-          </GridItem> 
-        </DisplayWhen>
-        <DisplayWhen roles={['Admin', 'Moderator']}>
-          <GridItem xs={12} sm={6} md={4}>            
-            <OrderCreate
-              color='warning'/>
-          </GridItem> 
-        </DisplayWhen>
       </GridContainer>
       <DisplayWhen roles={['Admin']}>
         <GridContainer>

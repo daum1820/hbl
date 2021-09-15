@@ -64,7 +64,7 @@ export default function OrderCreate(props) {
                   <CustomAutocomplete 
                     label={t('label.category.type.problem')}
                     optionLabel={(option) => `${option?._id} - ${option?.name}` }
-                    url='categories?type=Problem&limit=200'
+                    url='categories?type=Problem&limit=10000'
                     loadingText={t('label.loading')}
                     noOptionsText={t('error.category.problem.empty')}
                     onChange={(e, data) => onChange(data)}
@@ -89,7 +89,7 @@ export default function OrderCreate(props) {
                   <CustomAutocomplete 
                     label={t('label.customer.text')}
                     optionLabel={(option) => `${option?.customerNumber} - ${option?.name}` }
-                    url='customers?status=active'
+                    url='customers?status=active&limit=10000'
                     loadingText={t('label.loading')}
                     noOptionsText={t('error.customer.empty')}
                     onChange={(e, data) => {setCustomer(data); onChange(data)}}

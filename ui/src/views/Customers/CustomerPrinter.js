@@ -85,7 +85,7 @@ export function CustomerPrinter({ id, color }) {
                         <CustomAutocomplete 
                           label={t('label.customers.printer.model')}
                           optionLabel={(option) => option?.model }
-                          url='products?type=Printer'
+                          url='products?type=Printer&limit=10000'
                           loadingText={t('label.loading')}
                           noOptionsText={t('error.customer.printers.empty')}
                           groupBy={(option) => option.brand.name}

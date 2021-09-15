@@ -1,6 +1,6 @@
 {
-  "name": "hbl-ws",
-  "version": "0.0.1",
+  "name": "hbl-api",
+  "version": "1.0.1",
   "description": "",
   "author": "",
   "private": true,
@@ -28,6 +28,7 @@
     "@nestjs/mongoose": "^7.2.4",
     "@nestjs/passport": "^7.1.5",
     "@nestjs/platform-express": "^7.6.15",
+    "@nestjs/serve-static": "^2.2.2",
     "@nestjs/swagger": "^4.8.0",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/lodash": "^4.14.168",

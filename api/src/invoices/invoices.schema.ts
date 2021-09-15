@@ -43,6 +43,9 @@ export class Invoice {
   @Prop({ type: Date, required: true })
   dueDate: Date;
 
+  @Prop({ type: Date, required: false })
+  paidDate: Date;
+
   @Prop({ type: Number, required: false, default: 0 })
   amount: number;
 

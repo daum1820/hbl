@@ -34,7 +34,7 @@ export function InvoiceItem({ id, color }) {
     product: yup.object().required('error.field.required').nullable(),
     description: yup.string(),
     price: yup.string().default('R$ 0,00').required('error.field.required'),
-    quantity: yup.number().positive('error.field.positive').required('error.field.required').typeError('error.field.number'),
+    quantity: yup.number().positive('error.field.positive').nullable().required('error.field.required').typeError('error.field.number'),
   });
 
   const { register, control, handleSubmit, formState, formState: { errors }, setValue, reset } = useForm({
@@ -51,9 +51,9 @@ export function InvoiceItem({ id, color }) {
 
     await dispatch({ type: sagaActions.INVOICE_ADD_ITEM, payload: { id, price, ...rest }, callback: () =>
       reset({ 
-        product: null,
-        description: null,
-        quantity: null,
+        product: '',
+        description: '',
+        quantity: 0,
         price: 'R$ 0,00'
        })});
   } 
@@ -80,7 +80,7 @@ export function InvoiceItem({ id, color }) {
                         <CustomAutocomplete 
                           label={t('label.product.service')}
                           optionLabel={(option) => `${option?.model} - ${option?.description}` }
-                          url='products'
+                          url='products?limit=10000'
                           loadingText={t('label.loading')}
                           noOptionsText={t('error.product.empty')}
                           groupBy={(option) => t(`label.product.type.${option.type.toLowerCase()}s`)}

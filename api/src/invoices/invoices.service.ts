@@ -73,20 +73,10 @@ export class InvoicesService {
   }
 
   async amount(filter: BaseQueryDto = {}): Promise<number> {
+    const reducer = (curr, next: InvoiceDocument) => curr + next.amount - next.discount - next.amountPaid;
     const { search, ...rest } = filter;
-
-    const reduce = {
-      map : function () { emit(1, this.amount - this.discount - this.amountPaid) },
-      reduce: function (k, vals) { 
-        const reducer = (accumulator, curr) => accumulator + curr;
-        return vals.reduce(reducer, 0);
-      },
-      query: rest,
-    };
-
-    const resultAmount = await this.model.mapReduce(reduce);
-    
-    return resultAmount.results[0]?.value || 0;
+    const items = await this.find(rest);
+    return items.filter(buildArrayFilter(search, this.fields)).reduce(reducer, 0) || 0;
   }
 
   async findOne(filter: any): Promise<InvoiceDocument> {
@@ -113,9 +103,11 @@ export class InvoicesService {
     switch (status) {
       case InvoiceStatus.Open:
         invoice.amountPaid = 0;
+        invoice.paidDate = null;
         break;
       case InvoiceStatus.Closed:
         invoice.amountPaid = invoice.amount - invoice.discount;
+        invoice.paidDate = !!invoice.paidDate ? invoice.paidDate : new Date();
         break;
     }
     

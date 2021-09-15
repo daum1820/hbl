@@ -13,6 +13,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Icon from '@material-ui/core/Icon';
 import AdminNavbarLinks from 'components/Navbars/AdminNavbarLinks.js';
 import styles from 'assets/jss/material-dashboard-react/components/sidebarStyle.js';
+import { appName, appVersion } from 'utils';
 
 const useStyles = makeStyles(styles);
 
@@ -25,6 +26,18 @@ export default function Sidebar(props) {
     return location.pathname === routeName;
   }
   const { color, logoIcon, image, logoText, routes } = props;
+  
+  const version = (
+    <div className={classNames(classes.version, classes.whiteFont)}>
+      <div className={classes.versionIcon}>
+        <Icon fontSize='inherit' className={classNames(classes.whiteFont)}>verified</Icon>
+      </div>
+      <div className={classes.versionText}>
+        {`v${appVersion}`}
+      </div>
+    </div>
+  )
+
   let links = (
     <List className={classes.list}>
       {routes.map((prop, key) => {
@@ -91,6 +104,7 @@ export default function Sidebar(props) {
             <AdminNavbarLinks />
             {links}
           </div>
+          {version}
           {image !== undefined ? (
             <div
               className={classes.background}
@@ -110,6 +124,7 @@ export default function Sidebar(props) {
         >
           {brand}
           <div className={classes.sidebarWrapper}>{links}</div>
+          {version}
           {image !== undefined ? (
             <div
               className={classes.background}

@@ -1,6 +1,8 @@
 import { useLocation } from "react-router-dom";
 
 export const baseURL = process.env.REACT_APP_BASE_URL;
+export const appName = process.env.REACT_APP_NAME;
+export const appVersion = process.env.REACT_APP_VERSION;
 export const env = process.env.NODE_ENV;
 
 export function useQuery() {
@@ -24,7 +26,7 @@ export function formatDate(date) {
 }
 
 export function formatPrice(value = '') {
-  return parseFloat(`${value}`.replace('R$ ', '').replace('.', '').replace(',', '.'))
+  return parseFloat(`${value}`.replace('R$ ', '').replace('R$ ', '').replace('.', '').replace(',', '.'))
 }
 
 export function formatInt(value = '') {

@@ -15,6 +15,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { PrintersModule } from './printers/printers.module';
 import { SettingsModule } from './settings/settings.module';
 import { CommonsModule } from './commons/commons.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({

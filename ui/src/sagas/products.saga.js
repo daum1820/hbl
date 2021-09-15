@@ -13,7 +13,7 @@ export function* saveProduct({ payload }) {
     yield put(fetch(data));
     yield pushSuccess('readProduct', { message: 'message.product.save.success'});
 
-    yield history.push('/dashboard');
+    yield history.push(`/products/${data._id}`);
   } catch (err) {
     yield put(error(err?.response?.data));
     yield pushError('saveProduct', err);

@@ -40,9 +40,9 @@ export default function InvoiceCreate(props) {
   });
   
   React.useEffect(() => {
-    const loadCategoryTypes = async () => await dispatch({ type: sagaActions.FETCH_TYPES, payload: { type: 'dueDate'} });
+    const loadTypes = async () => await dispatch({ type: sagaActions.FETCH_TYPES, payload: { type: 'dueDate'} });
     if (isEmpty(dueDateTypes)) {
-      loadCategoryTypes();
+      loadTypes();
     }
   }, [dispatch, dueDateTypes]);
 
@@ -71,7 +71,7 @@ export default function InvoiceCreate(props) {
                   <CustomAutocomplete 
                     label={t('label.customer.text')}
                     optionLabel={(option) => `${option?.customerNumber} - ${option?.name}` }
-                    url='customers?status=active'
+                    url='customers?status=active&limit=10000'
                     loadingText={t('label.loading')}
                     noOptionsText={t('error.customer.empty')}
                     onChange={(e, data) => onChange(data)}

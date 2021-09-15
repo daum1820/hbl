@@ -1,0 +1,30 @@
+# Use root/example as user/password credentials
+version: '3.8'
+
+services:
+  api:
+    restart: 
+      always
+    networks:
+      - backbone
+    image: daum1820/hbl-api
+    environment: 
+      MONGODB_URI: mongodb+srv://${MONGODB_USER}:${MONGODB_PASSWORD}@hbl-mongo-prod.tzpj9.mongodb.net/hbl-db?retryWrites=true&w=majority
+      JWT_ACCESS_TOKEN_EXPIRATION_TIME: 5m
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_REFRESH_TOKEN_EXPIRATION_TIME: 8h
+    ports:
+      - '3000:3000'
+  ui:
+    restart: 
+      always
+    networks:
+      - backbone
+    image: daum1820/hbl-ui
+    ports:
+      - '80:80'
+    depends_on:
+      - api
+networks:
+  backbone:
+    driver: bridge

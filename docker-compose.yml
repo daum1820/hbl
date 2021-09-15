@@ -2,20 +2,12 @@
 version: '3.8'
 
 services:
-  ui:
-    image: hbl-react-app
-    build:
-      context: ./ui
-      target: production
-      dockerfile: ./Dockerfile
-    environment: 
-      REACT_APP_BASE_URL: http://api:3000/
-    ports:
-      - '80:80'
-    depends_on:
-      - api
   api:
-    image: hbl-ws
+    restart: 
+      always
+    networks:
+      - backbone
+    image: daum1820/hbl-api
     build:
       context: ./api
       target: production
@@ -23,16 +15,32 @@ services:
     environment: 
       MONGODB_URI: mongodb://mongo:27017/hbl-db
       JWT_ACCESS_TOKEN_EXPIRATION_TIME: 5m
-      JWT_SECRET_KEY: HBLS3Kr3tK3y
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_REFRESH_TOKEN_EXPIRATION_TIME: 8h
     ports:
       - '3000:3000'
+  ui:
+    restart: 
+      always
+    networks:
+      - backbone
+    image: daum1820/hbl-ui
+    build:
+      context: ./ui
+      target: production
+      dockerfile: ./Dockerfile
+    ports:
+      - '80:80'
+    depends_on:
+      - api
     depends_on:
       - mongo
 
   mongo-express:
     image: mongo-express
     restart: always
+    networks:
+      - backbone
     ports:
       - 8081:8081
     depends_on:
@@ -40,6 +48,8 @@ services:
   mongo:
     image: mongo
     restart: always
+    networks:
+      - backbone
     ports:
       - 27017:27017
     volumes:
@@ -50,3 +60,7 @@ volumes:
     external: true
   hbl-mongo-config-vol:
     external: true
+
+networks:
+  backbone:
+    driver: bridge

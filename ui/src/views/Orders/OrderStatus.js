@@ -7,7 +7,7 @@ import GridContainer from 'components/Grid/GridContainer';
 import GridItem from 'components/Grid/GridItem';
 import { useDispatch } from 'react-redux';
 import ordersStyle from './orderStyle';
-import { Icon } from '@material-ui/core';
+import { Icon, Tooltip } from '@material-ui/core';
 import Button from 'components/CustomButtons/Button';
 import { orderMachine } from 'machines/orderMachine';
 import { useMachine } from '@xstate/react';
@@ -16,7 +16,7 @@ import classNames from 'classnames';
 const useStyles = makeStyles(ordersStyle);
 
 export function OrderStatus(props) {
-  const { id, status } = props;
+  const { id, status, isDirty } = props;
   const dispatch = useDispatch();
   const classes = useStyles();
   const { t } = useTranslation();
@@ -52,9 +52,13 @@ export function OrderStatus(props) {
           </div>
         </div>
         <GridItem>
-          <Button size='sm' aria-label="list" color={nextContext.color} className={classes.statusButton} onClick={() => send('NEXT')}>
-            <Icon style={{ marginRight: '5px' }} className={classNames({ [classes.spin]: nextContext.spin})}>{nextContext.icon}</Icon> {t(nextContext.actionLabel)}
-          </Button>
+        <Tooltip placement='top' title={isDirty ? t('error.save.order.first') : ''}>
+          <div>
+            <Button size='sm' aria-label="list" color={nextContext.color} className={classes.statusButton} onClick={() => send('NEXT')} disabled={isDirty}>
+              <Icon style={{ marginRight: '5px' }} className={classNames({ [classes.spin]: nextContext.spin})}>{nextContext.icon}</Icon> {t(nextContext.actionLabel)}
+            </Button>
+          </div>
+        </Tooltip>
         </GridItem>
       </GridContainer>
     </div>

@@ -1,5 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
+import moment from "moment";
+import MomentUtils from "@date-io/moment";
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
@@ -22,13 +24,12 @@ import CardIcon from 'components/Card/CardIcon';
 import { Receipt } from '@material-ui/icons';
 import CardFooter from 'components/Card/CardFooter';
 import NumberComponent from 'components/Common/NumberComponent';
-import { formatPrice } from 'utils';
+import { baseURL, formatCurrency, formatPrice } from 'utils';
 import { InvoiceStatus } from './InvoiceStatus';
 import { InvoiceItem } from './InvoiceItem';
 import CommonList from 'components/Common/CommonList';
 import { getInvoiceItemSelectorFactory } from 'features/invoices.feature';
-import { baseURL } from 'utils';
-import { formatCurrency } from 'utils';
+import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 const useStyles = makeStyles(invoicesStyle);
 
@@ -43,15 +44,21 @@ export function InvoicesDetails({color = 'danger'}) {
 
   const invoiceFormSchema = yup.object().shape({
     invoiceNumber: yup.number().positive('error.field.positive').required('error.field.required'),
-    dueDate: yup.date().required('error.field.required'),
-    customer: yup.object().required('error.field.required'),
+    dueDate: yup.date().required('error.field.required').nullable().typeError('error.field.required'),
+    customer: yup.object().required('error.field.required').nullable().typeError('error.field.required'),
     discount: yup.string().default('R$ 0,00'),
     amountPaid: yup.string().default('R$ 0,00'),
     amount: yup.string().default('R$ 0,00'),
     amountToPay: yup.string().default('R$ 0,00'),
+    status: yup.string(),
+    paidDate: yup.date().when('status', {
+      is: (val) => val !== 'open',
+      then: yup.date().required('error.field.required').nullable().typeError('error.field.required'),
+      otherwise: yup.date().nullable()
+    }),
   });
 
-  const { register, control, handleSubmit, formState, formState: { errors }, setValue, getValues, reset } = useForm({
+  const { register, control, handleSubmit, formState, formState: { errors, isDirty }, setValue, getValues, reset } = useForm({
     resolver: yupResolver(invoiceFormSchema),
   });
 
@@ -59,8 +66,8 @@ export function InvoicesDetails({color = 'danger'}) {
     let { amount, discount, amountPaid, amountToPay, customer: {_id:customer }, ...rest} = data;
     discount = formatPrice(discount);
     amountPaid = formatPrice(amountPaid);
-
-    await dispatch({ type: sagaActions.SAVE_INVOICE, payload: { id, discount, amountPaid, customer, ...rest }});
+    
+    await dispatch({ type: sagaActions.SAVE_INVOICE, payload: { id, discount, amountPaid, customer, ...rest } });
   } 
 
   const updateTotalAmount = () => {
@@ -86,7 +93,7 @@ export function InvoicesDetails({color = 'danger'}) {
     setValue(event.target.name, event.target.value);
     updateTotalAmount();
   }
-  
+
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={6}>
@@ -98,7 +105,7 @@ export function InvoicesDetails({color = 'danger'}) {
               </CardIcon>
               <GridContainer justifyContent='space-between'>
                 <h2 className={classes.cardTitle}>{t('label.invoice.details' )}</h2>
-                { !!invoice ? <InvoiceStatus color={color} id={id} status={invoice?.status}/> : null}
+                { !!invoice ? <InvoiceStatus color={color} id={id} status={invoice?.status} isDirty={isDirty} /> : null}
               </GridContainer>
             </CardHeader>
             <CardBody className={classes.textCenter}>
@@ -135,7 +142,7 @@ export function InvoicesDetails({color = 'danger'}) {
                         label={t('label.customer.text')}
                         optionLabel={(option) => `${option?.customerNumber} - ${option?.name}`}
                         optionSelected={(option, value) => option._id === value._id}
-                        url='customers?status=active'
+                        url='customers?status=active&limit=10000'
                         loadingText={t('label.loading')}
                         noOptionsText={t('error.customer.empty')}
                         onChange={(e, data) => onChange(data)}
@@ -243,6 +250,62 @@ export function InvoicesDetails({color = 'danger'}) {
                 </GridItem>
               </GridContainer>
               <GridContainer justifyContent='flex-end'>
+                <GridItem xs={12} sm={12} md={4}>
+                  <MuiPickersUtilsProvider libInstance={moment} utils={MomentUtils} locale="pt-br">
+                    <Controller
+                      control={control}
+                      name="dueDate"
+                      inputRef={register()}
+                      render={({ field: { onChange, value } }) => (
+                        <KeyboardDatePicker
+                          invalidDateMessage={t('error.field.invalid.format')}
+                          variant="inline"
+                          format={t('format.date')}
+                          margin="normal"
+                          id="dueDate"
+                          label={t('label.invoice.dueDate')}
+                          value={value ? moment(value) : null}
+                          onChange={date => onChange(date)}
+                          fullWidth
+                          disabled={isClosed}
+                          error={ formState.isSubmitted && (!!errors.dueDate) }
+                          helperText={t(errors.dueDate?.message)}
+                          KeyboardButtonProps={{
+                            'aria-label': 'due date',
+                          }}
+                        />
+                      )}
+                    />
+                  </MuiPickersUtilsProvider>
+                </GridItem>
+                <GridItem xs={12} sm={12} md={4}>
+                  <MuiPickersUtilsProvider libInstance={moment} utils={MomentUtils} locale="pt-br">
+                    <Controller
+                      control={control}
+                      name="paidDate"
+                      inputRef={register()}
+                      render={({ field: { onChange, value } }) => (
+                        <KeyboardDatePicker
+                          invalidDateMessage={t('error.field.invalid.format')}
+                          variant="inline"
+                          format={t('format.date')}
+                          margin="normal"
+                          id="paidDate"
+                          label={t('label.invoice.paidDate')}
+                          value={value ? moment(value) : null}
+                          onChange={date => onChange(date)}
+                          fullWidth
+                          disabled={isClosed}
+                          error={ formState.isSubmitted && (!!errors.paidDate) }
+                          helperText={t(errors.paidDate?.message)}
+                          KeyboardButtonProps={{
+                            'aria-label': 'paid date',
+                          }}
+                        />
+                      )}
+                    />
+                  </MuiPickersUtilsProvider>
+                </GridItem>
                 <GridItem xs={12} sm={12}  md={4}>
                   <Controller
                     control={control}
@@ -275,6 +338,7 @@ export function InvoicesDetails({color = 'danger'}) {
             <CardFooter>
                 <Button
                   type='submit'
+                  disabled={isClosed}
                   color={color}>
                   {t('button.save.invoice')}
                 </Button>
@@ -308,7 +372,7 @@ export function InvoicesDetails({color = 'danger'}) {
                (item) => formatCurrency(item.quantity * item.price)
               ]}
             listSelector={getInvoiceItemSelectorFactory(id)}
-            removePayload={(item) => ({ id, price: item.items[3], quantity: item.items[4] })}
+            removePayload={(item) => ({ id, quantity: item.items[3], price: formatPrice(item.items[4]) })}
             emptyMessage='error.invoice.item.empty'
             color={color}
             create={() => false}

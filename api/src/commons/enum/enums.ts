@@ -25,12 +25,12 @@ export enum InvoiceStatus {
 }
 
 export enum DueDate {
+  Days7 = '7d',
   Days10 = '10d',
   Days15 = '15d',
   Days20 = '20d',
   Days30 = '30d',
-  Days60 = '60d',
-  Days90 = '90d',
+  Days45 = '45d',
 }
 export enum OrderStatus {
   Open = 'open',

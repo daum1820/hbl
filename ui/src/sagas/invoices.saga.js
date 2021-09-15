@@ -13,7 +13,7 @@ export function* saveInvoice({ payload }) {
     yield put(fetch(data));
     yield pushSuccess('readInvoice', { message: 'message.invoice.save.success'});
 
-    yield _.isEmpty(id) ? history.push(`/invoices/${data._id}`) : history.push('/dashboard');
+    yield history.push(`/invoices/${data._id}`);
   } catch (err) {
     yield put(error(err?.response?.data));
     yield pushError('saveInvoice', err);

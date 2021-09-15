@@ -13,7 +13,7 @@ export function* saveCustomer({ payload }) {
     yield put(fetch(data));
     yield pushSuccess('readCustomer', { message: 'message.customer.save.success'});
 
-    yield _.isEmpty(id) ? history.push(`/customers/${data._id}`) : history.push('/dashboard'); 
+    yield history.push(`/customers/${data._id}`); 
   } catch (err) {
     yield put(error(err?.response?.data));
     yield pushError('saveCustomer', err);

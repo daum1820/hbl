@@ -49,6 +49,9 @@ export class InvoiceDto extends BaseIdDto {
   @IsDate()
   dueDate: Date;
 
+  @IsDate()
+  paidDate: Date;
+
   @IsEnum(DueDate, { each : true })
   due: String;
 
@@ -86,11 +89,11 @@ export class InvoiceDto extends BaseIdDto {
     if (invoice) {
       this.invoiceNumber = invoice.invoiceNumber;
       this.dueDate = invoice.dueDate;
+      this.paidDate = invoice.paidDate;
       this.amount = invoice.amount;
       this.discount = invoice.discount;
       this.amountPaid = invoice.amountPaid;
       this.items = invoice.items.reduce(reduceModel(), {});
-    
       this.status = invoice.status;
       this.customer = invoice.customer;
       this.createdAt = invoice.createdAt;

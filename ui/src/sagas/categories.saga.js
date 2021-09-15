@@ -13,7 +13,7 @@ export function* saveCategory({ payload }) {
     yield put(fetch(data));
     yield pushSuccess('readCategory', { message: 'message.category.save.success'});
 
-    yield _.isEmpty(id) ? history.push(`/categories/${data._id}`) : history.push('/dashboard');
+    yield history.push(`/categories/${data._id}`);
   } catch (err) {
     yield put(error(err?.response?.data));
     yield pushError('saveCategory', err);

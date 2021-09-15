@@ -13,7 +13,7 @@ export function* saveUser({ payload }) {
     yield put(fetch(data));
     yield pushSuccess('readUser', { message: 'message.user.save.success'});
 
-    yield _.isEmpty(id) ? history.push(`/users/${data._id}`) : history.push('/dashboard'); 
+    yield  history.push(`/users/${data._id}`) ; 
   } catch (err) {
     yield put(error(err?.response?.data));
     yield pushError('saveUser', err);

@@ -136,6 +136,7 @@
       "details": "Detalhes da Fatura",
       "code": "Número da fatura",
       "dueDate": "Vencimento em",
+      "paidDate": "Faturado em",
       "createdAt": "Emitida em",
       "total": "Total da fatura",
       "customer": "Cliente",
@@ -225,12 +226,12 @@
       }
     },
     "duedate": {
+      "days7": "7 dias",
       "days10": "10 dias",
       "days15": "15 dias",
       "days20": "20 dias",
       "days30": "30 dias",
-      "days60": "60 dias",
-      "days90": "90 dias"
+      "days45": "45 dias"
     }
   },
   "icon" : {
@@ -291,6 +292,10 @@
     }
   },
   "error": {
+    "save": {
+      "invoice.first" : "Salve a fatura antes de prosseguir",
+      "order.first" : "Salve a OS antes de prosseguir"
+    },
     "model" : {
       "type.exists": "Este código já existe para este tipo de produto",
       "brand.exists": "Este modelo já existe para este fabricante"

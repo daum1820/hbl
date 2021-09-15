@@ -50,6 +50,18 @@ const sidebarStyle = (theme) => ({
       ...transition,
     },
   },
+  version: {
+    position: 'relative',
+    padding: '5px 15px',
+    fontSize: '0.750rem',
+    display: 'flex',
+    alignContent: 'center',
+    justifyContent: 'center',
+    zIndex: '4',
+    [theme.breakpoints.down('sm')]: {
+      top: '-20px',
+    }
+  },
   logo: {
     position: 'relative',
     padding: '15px 15px',
@@ -79,6 +91,14 @@ const sidebarStyle = (theme) => ({
     '&,&:hover': {
       color: whiteColor,
     },
+  },
+  versionIcon: {
+    width: '20px',
+    display: 'inline-block',
+    maxHeight: '30px',
+  },
+  versionText: {
+    marginTop: '-2px'
   },
   logoImage: {
     width: '30px',

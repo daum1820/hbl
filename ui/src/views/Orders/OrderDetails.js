@@ -71,7 +71,7 @@ export function OrderDetails({color = 'warning'}) {
     nos: yup.string()
   });
 
-  const { register, control, handleSubmit, formState, formState: { errors }, setValue, reset } = useForm({
+  const { register, control, handleSubmit, formState, formState: { errors, isDirty }, setValue, reset } = useForm({
     resolver: yupResolver(orderFormSchema),
     defaultValues: {
       ...order,
@@ -117,7 +117,7 @@ export function OrderDetails({color = 'warning'}) {
               </CardIcon>
               <GridContainer justifyContent='space-between'>
                 <h2 className={classes.cardTitle}>{t('label.order.details' )}</h2>
-                { !!order ? <OrderStatus color={color} id={id} status={order?.status}/> : null}
+                { !!order ? <OrderStatus color={color} id={id} status={order?.status} isDirty={isDirty} /> : null}
               </GridContainer>
             </CardHeader>
             <CardBody className={classes.textCenter}>
@@ -156,7 +156,7 @@ export function OrderDetails({color = 'warning'}) {
                         label={t('label.customer.text')}
                         optionLabel={(option) => `${option?.customerNumber} - ${option?.name}`}
                         optionSelected={(option, value) => option._id === value._id}
-                        url='customers?status=active'
+                        url='customers?status=active&limit=10000'
                         loadingText={t('label.loading')}
                         noOptionsText={t('error.customer.empty')}
                         onChange={(e, data) => {setCustomer(data); setValue('printer', null); onChange(data)}}
@@ -307,7 +307,7 @@ export function OrderDetails({color = 'warning'}) {
                         label={t('label.order.technicalUser')}
                         optionLabel={(option) => `${option?.name || ''} ${option?.lastName || ''}`}
                         optionSelected={(option, value) => option._id === value._id}
-                        url='users?status=active'
+                        url='users?status=active&limit=10000'
                         loadingText={t('label.loading')}
                         noOptionsText={t('error.users.empty')}
                         onChange={(e, data) => onChange(data)}
@@ -364,7 +364,7 @@ export function OrderDetails({color = 'warning'}) {
                       <CustomAutocomplete 
                         label={t('label.category.type.problem')}
                         optionLabel={(option) => `${option?._id} - ${option?.name}` }
-                        url='categories?type=Problem&limit=200'
+                        url='categories?type=Problem&limit=10000'
                         loadingText={t('label.loading')}
                         noOptionsText={t('error.category.problem.empty')}
                         onChange={(e, data) => onChange(data)}

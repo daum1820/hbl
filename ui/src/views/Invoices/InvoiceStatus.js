@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { sagaActions }from 'sagas/actions.saga';
-import { Icon } from '@material-ui/core';
+import { Icon, Tooltip } from '@material-ui/core';
 import styles from './invoicesStyle';
 import { useMachine } from '@xstate/react';
 import { invoiceMachine } from 'machines/invoiceMachine';
@@ -15,7 +15,7 @@ import classNames from 'classnames';
 const useStyles = makeStyles(styles);
 
 export function InvoiceStatus(props) {
-  const { id, status } = props;
+  const { id, status, isDirty } = props;
   const dispatch = useDispatch();
   const classes = useStyles();
   const { t } = useTranslation();
@@ -50,9 +50,13 @@ export function InvoiceStatus(props) {
           </div>
         </div>
         <GridItem>
-          <Button size='sm' aria-label="list" color={nextContext.color} className={classes.statusButton} onClick={() => send('TOGGLE')}>
-            <Icon style={{ marginRight: '5px' }}>{nextContext.icon}</Icon> {t(nextContext.actionLabel)}
-          </Button>
+        <Tooltip placement='top' title={isDirty ? t('error.save.invoice.first') : ''}>
+          <div>
+            <Button size='sm' aria-label="list" color={nextContext.color} className={classes.statusButton} onClick={() => send('TOGGLE')} disabled={isDirty}>
+              <Icon style={{ marginRight: '5px' }}>{nextContext.icon}</Icon> {t(nextContext.actionLabel)}
+            </Button>
+          </div>
+        </Tooltip>
         </GridItem>
       </GridContainer>
     </div>

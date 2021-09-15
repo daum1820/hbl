@@ -36,7 +36,7 @@ export default function CustomTable(props) {
   }
 
   if(remove()) {
-    actionWidth += 50;
+    actionWidth += view() ? 50 : 100;
   }
 
   if(pdf()) {
@@ -111,7 +111,7 @@ export default function CustomTable(props) {
               })}
               {action ? (
                 <TableCell style={{ width: `${actionWidth}px` }} className={classes.tableCell + ' ' + classes.tableHeadCell} />
-              ): ""}
+              ): null}
             </TableRow>
           </TableHead>
         ) : null}
@@ -128,13 +128,13 @@ export default function CustomTable(props) {
                 })}
                 {action ? (
                   <TableCell className={classes.tableCell} style={{ width: `${actionWidth}px` }} >                 
-                      {toRemove === prop._id ? (<p className={classes.tableHint}>{t('label.remove.hint')}</p>): ''}
+                      {toRemove === prop._id ? (<p className={classes.tableHint}>{t('label.remove.hint')}</p>): null}
                       {viewBlock(prop)}
                       {confirmRemoveBlock(prop)}
                       {removeBlock(prop)}
                       {exportBlock(prop)}
                   </TableCell>
-                ): ""}
+                ): null}
                 
               </TableRow>
             );
