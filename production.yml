@@ -7,7 +7,7 @@ services:
       always
     networks:
       - backbone
-    image: daum1820/hbl-api
+    image: daum1820/hbl-api:latest
     environment: 
       MONGODB_URI: mongodb+srv://${MONGODB_USER}:${MONGODB_PASSWORD}@hbl-mongo-prod.tzpj9.mongodb.net/hbl-db?retryWrites=true&w=majority
       JWT_ACCESS_TOKEN_EXPIRATION_TIME: 5m
@@ -20,9 +20,10 @@ services:
       always
     networks:
       - backbone
-    image: daum1820/hbl-ui
+    image: daum1820/hbl-ui:latest
     ports:
       - '80:80'
+      - '443:443'
     depends_on:
       - api
 networks:
