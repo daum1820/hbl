@@ -71,7 +71,7 @@ export function InvoiceItem({ id, color }) {
             </CardHeader>
             <CardBody className={classes.textCenter}>
             <GridContainer>
-                <GridItem xs={12} sm={12}  md={6}>
+                <GridItem xs={12} sm={12}  md={7}>
                   <Controller
                       control={control}
                       name="product"
@@ -98,7 +98,7 @@ export function InvoiceItem({ id, color }) {
                       )}
                     />
                 </GridItem>
-                <GridItem xs={12} sm={12}  md={3}>
+                <GridItem xs={12} sm={12}  md={2}>
                   <Controller
                     control={control}
                     name="quantity"

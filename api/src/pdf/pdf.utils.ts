@@ -1,3 +1,7 @@
+import moment from 'moment-timezone';
+
+moment.tz.setDefault('Brazil/East');
+
 export function hr(doc, y, start = 50, end = 565) {
   doc
     .strokeColor("#aaaaaa")
@@ -37,16 +41,9 @@ export function formatFullDate(date: Date) {
 }
 
 export function formatDate(date: Date) {
-  const day: number = date.getDate();
-  const month: number = date.getMonth() + 1;
-  const year = date.getFullYear();
-
-  return `${day.toString().padStart(2, '0')}/${ month.toString().padStart(2, '0')}/${year}`;
+  return moment(date.getTime()).format('DD/MM/YYYY');
 }
 
 export function formatHour(date: Date) {
-  const hours: number = date.getHours();
-  const minutes: number = date.getMinutes();
-
-  return `${hours}:${minutes}`;
+  return moment(date.getTime()).format('hh:mm');
 }

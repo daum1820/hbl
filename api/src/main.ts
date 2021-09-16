@@ -1,7 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-
 import { AppModule } from './app.module';
 
 declare const module: any;
@@ -13,6 +12,7 @@ async function bootstrap() {
   const configService: ConfigService = app.get(ConfigService);
   app.enableCors();
   app.setGlobalPrefix('api');
+
   await app.listen(configService.get<string>('PORT') || 3000);
 
   if (module.hot) {

@@ -144,13 +144,13 @@ export class PdfService {
     this.logger.log(`> generateCustomerInfo ${JSON.stringify(customer)}`);
 
     doc
-      .fontSize(10)
+      .fontSize(9)
       .font('Helvetica-Bold')
-      .text(`${customer.fullName || customer.name} ${formatRegistration(customer.registrationNr, customer.customerNumber)}`, 300, custormerInfoPosition)
+      .text(`${customer.fullName || customer.name} ${formatRegistration(customer.registrationNr, customer.customerNumber)}`, 260, custormerInfoPosition)
       .font('Helvetica')
-      .text(customer.contactName, 300, custormerInfoPosition + 15)
-      .text(customer.address, 300, custormerInfoPosition + 30)
-      .text(`${customer.city}/${customer.state}`, 300, custormerInfoPosition + 45)
+      .text(customer.contactName, 260, custormerInfoPosition + 15)
+      .text(customer.address, 260, custormerInfoPosition + 30)
+      .text(`${customer.city}/${customer.state}`, 260, custormerInfoPosition + 45)
       .moveDown();
 
       this.logger.log(`< generateCustomerInfo`);

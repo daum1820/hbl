@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import moment from "moment";
+import { moment } from "utils";
 import MomentUtils from "@date-io/moment";
 import { useParams, useLocation } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';

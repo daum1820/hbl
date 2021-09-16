@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import moment from "moment";
+import { moment } from "utils";
 import MomentUtils from "@date-io/moment";
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
@@ -29,7 +29,7 @@ import { InvoiceStatus } from './InvoiceStatus';
 import { InvoiceItem } from './InvoiceItem';
 import CommonList from 'components/Common/CommonList';
 import { getInvoiceItemSelectorFactory } from 'features/invoices.feature';
-import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { KeyboardDatePicker, DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 const useStyles = makeStyles(invoicesStyle);
 
@@ -44,6 +44,7 @@ export function InvoicesDetails({color = 'danger'}) {
 
   const invoiceFormSchema = yup.object().shape({
     invoiceNumber: yup.number().positive('error.field.positive').required('error.field.required'),
+      
     dueDate: yup.date().required('error.field.required').nullable().typeError('error.field.required'),
     customer: yup.object().required('error.field.required').nullable().typeError('error.field.required'),
     discount: yup.string().default('R$ 0,00'),
@@ -110,7 +111,7 @@ export function InvoicesDetails({color = 'danger'}) {
             </CardHeader>
             <CardBody className={classes.textCenter}>
               <GridContainer>
-                <GridItem xs={12} sm={12}  md={4}>
+                <GridItem xs={12} sm={12}  md={3}>
                   <Controller
                     control={control}
                     name="invoiceNumber"
@@ -132,7 +133,32 @@ export function InvoicesDetails({color = 'danger'}) {
                     )}
                   />
                 </GridItem>
-                <GridItem xs={12} sm={12}  md={8}>
+                <GridItem xs={12} sm={12}  md={3}>
+                  <MuiPickersUtilsProvider libInstance={moment} utils={MomentUtils} locale="pt-br">
+                    <Controller
+                      control={control}
+                      name="createdAt"
+                      inputRef={register()}
+                      render={({ field: { value }}) => (
+                        <DateTimePicker
+                          invalidDateMessage={t('error.field.invalid.format')}
+                          variant="inline"
+                          format={t('format.date')}
+                          margin="normal"
+                          id="createdAt"
+                          label={t('label.invoice.createdAt')}
+                          value={value ? moment(value) : null}
+                          fullWidth
+                          disabled
+                          KeyboardButtonProps={{
+                            'aria-label': 'createdAt date',
+                          }}
+                        />
+                      )}
+                    />
+                  </MuiPickersUtilsProvider>
+                </GridItem>
+                <GridItem xs={12} sm={12}  md={6}>
                   <Controller
                     control={control}
                     name="customer"

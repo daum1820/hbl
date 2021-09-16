@@ -27,6 +27,7 @@ import Info from 'components/Typography/Info';
 import { getOrderListSelector } from 'features/orders.feature';
 import Primary from 'components/Typography/Primary';
 import { OrderDetails } from 'views/Orders/OrderDetails';
+import { formatFullDate } from 'utils';
 
 const appRoutes = [
   {
@@ -122,7 +123,7 @@ const appRoutes = [
     listSaga: sagaActions.LIST_INVOICES,
     removeSaga: sagaActions.DELETE_INVOICE,
     pdfContext: 'invoices',
-    headers: ['label.invoice.code', 'label.invoice.customer', 'label.invoice.total', 'label.invoice.amountPaid', 'label.invoice.dueDate', 'label.customers.contactName', 'label.customers.contactEmail', 'label.customers.contactPhone', 'label.status.text'],
+    headers: ['label.invoice.code', 'label.invoice.customer', 'label.invoice.total', 'label.invoice.amountPaid', 'label.invoice.createdAt', 'label.invoice.dueDate', 'label.status.text'],
     properties: [
       'invoiceNumber', 
       (item) => `${item.customer.name} (${item.customer.registrationNr})`,
@@ -136,10 +137,8 @@ const appRoutes = [
         const Component = amount === 0 ? Primary : amount > 0  || item.status === 'closed' ? Success : Danger;
         return (<Component>{formatCurrency(amount)}</Component>)
       },
+      (item) => formatDate(item.createdAt),
       (item) => formatDate(item.dueDate),
-      (item) => item.customer.contactName,
-      (item) => item.customer.contactEmail,
-      (item) => item.customer.contactPhone,
       (item) => {
         const label = `label.invoice.status.${item.status.toLowerCase()}`;
         const Component = item.status === 'open' ? Info : Success;
@@ -163,10 +162,11 @@ const appRoutes = [
     listSaga: sagaActions.LIST_ORDERS,
     removeSaga: sagaActions.DELETE_ORDER,
     pdfContext: 'orders',
-    headers: ['label.order.code', 'label.invoice.customer', 'label.customer.printer', 'label.category.type.problem', 'label.order.technicalUser', 'label.order.status.text'],
+    headers: ['label.order.code', 'label.invoice.customer', 'label.order.createdAt', 'label.customer.printer', 'label.category.type.problem', 'label.order.technicalUser', 'label.order.status.text'],
     properties: [
       'orderNumber', 
       (item) => `${item.customer.name} (${item.customer.registrationNr})`,
+      (item) => formatFullDate(item.createdAt),
       (item) => `${item.printer.product.model} (${item.printer.serialNumber})`,
       (item) => `${item.problem._id} - ${item.problem.name}`,
       (item) => !!item.technicalUser ? `${item.technicalUser?.name} ${item.technicalUser?.lastName }` : null,

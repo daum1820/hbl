@@ -89,7 +89,7 @@
     "printers": "Impressoras",
     "loading": "Carregando...",
     "services": "Serviços",
-    "quantity": "Quantidade",
+    "quantity": "Qtde",
     "price" : "Valor Unitário",
     "product": {
       "service": "Produtos/Serviços",
@@ -119,6 +119,7 @@
       "action": "Ação",
       "notes": "Observaçōes",
       "points": "Pendências",
+      "createdAt": "Aberta em",
       "startedAt": "Atendimento iniciado em",
       "finishedAt": "Atendimento finalizado em",
       "status" : {

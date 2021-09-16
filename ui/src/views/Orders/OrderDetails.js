@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import moment from "moment";
+import { moment } from "utils";
 import MomentUtils from "@date-io/moment";
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
@@ -26,7 +26,7 @@ import CardFooter from 'components/Card/CardFooter';
 import NumberComponent from 'components/Common/NumberComponent';
 import { baseURL } from 'utils';
 import { formatInt } from 'utils';
-import { KeyboardDateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { KeyboardDateTimePicker, DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { OrderStatus } from './OrderStatus';
 
 const useStyles = makeStyles(ordersStyle);
@@ -44,6 +44,7 @@ export function OrderDetails({color = 'warning'}) {
 
   const orderFormSchema = yup.object().shape({
     orderNumber: yup.number().positive('error.field.positive').required('error.field.required'),
+    createdAt: yup.date().required('error.field.required').nullable().typeError('error.field.required'),
     customer: yup.object().required('error.field.required').nullable().typeError('error.field.required'),
     printer: yup.object().required('error.field.required').nullable().typeError('error.field.required'),
     problem: yup.object().required('error.field.required').nullable().typeError('error.field.required'),
@@ -143,6 +144,31 @@ export function OrderDetails({color = 'warning'}) {
                       />
                     )}
                   />
+                </GridItem>
+                <GridItem xs={12} sm={12} md={2}>
+                  <MuiPickersUtilsProvider libInstance={moment} utils={MomentUtils} locale="pt-br">
+                    <Controller
+                      control={control}
+                      name="createdAt"
+                      inputRef={register()}
+                      render={({ field: { value }}) => (
+                        <DateTimePicker
+                          invalidDateMessage={t('error.field.invalid.format')}
+                          variant="inline"
+                          format={t('format.dateTime')}
+                          margin="normal"
+                          id="createdAt"
+                          label={t('label.order.createdAt')}
+                          value={value ? moment(value) : null}
+                          fullWidth
+                          disabled
+                          KeyboardButtonProps={{
+                            'aria-label': 'createdAt date',
+                          }}
+                        />
+                      )}
+                    />
+                  </MuiPickersUtilsProvider>
                 </GridItem>
               </GridContainer>
               <GridContainer>
