@@ -81,6 +81,44 @@ export function* orderStatus({ payload }) {
   }
 }
 
+export function* createItem({ payload }) {
+  try {
+    const { id, ...data } = payload;
+    const { data:order } = yield call(API.post, { url: `/orders/${id}/item`, data });
+    yield pushSuccess('createItem', { message: 'message.order.item.add.success'});
+    yield put(fetch(order));
+  } catch (err) {
+    yield put(error(err?.response?.data));
+    yield pushError('createItem', err);
+  }
+}
+
+export function* updateItem({ payload }) {
+  try {
+    const { id, ...data } = payload;
+    const { data:order } = yield call(API.put, { url: `/orders/${id}/item`, data });
+    yield pushSuccess('updateItem', { message: 'message.order.item.add.success'});
+    yield put(fetch(order));
+  } catch (err) {
+    yield put(error(err?.response?.data));
+    yield pushError('updateItem', err);
+  }
+}
+
+export function* deleteItem({ payload }) {
+  try {
+
+    const { id, itemOrder } = payload;
+    
+    const { data } = yield call(API.delete, { url: `/orders/${id}/item`, config: { data: {...itemOrder }}});
+    yield pushSuccess('deleteItem', { message: 'message.order.item.remove.success'});
+    yield put(fetch(data));
+  } catch (err) {
+    yield put(error(err?.response?.data));
+    yield pushError('deleteItem', err);
+  }
+}
+
 export default function* watchOrdersSaga() {
   yield takeEvery(sagaActions.DASHBOARD_ORDERS, dashboardOrders)
   yield takeLatest(sagaActions.LIST_ORDERS, listOrders)
@@ -88,4 +126,7 @@ export default function* watchOrdersSaga() {
   yield takeLatest(sagaActions.READ_ORDER, readOrder)
   yield takeLatest(sagaActions.DELETE_ORDER, deleteOrder)
   yield takeLatest(sagaActions.ORDER_CHANGE_STATUS, orderStatus)
+  yield takeLatest(sagaActions.ORDER_ADD_ITEM, createItem)
+  yield takeLatest(sagaActions.ORDER_REMOVE_ITEM, deleteItem)
+  yield takeLatest(sagaActions.ORDER_UPDATE_ITEM, updateItem)
 }

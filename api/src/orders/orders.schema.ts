@@ -4,39 +4,21 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Customer, CustomerSchema } from '../customers/customers.schema';
 import { Printer, PrinterSchema } from '../printers/printers.schema';
 import { Categories, CategoriesSchema } from '../categories/categories.schema';
-import { OrderStatus } from '../commons/enum/enums';
+import { OrderStatus, OrderItemStatus } from '../commons/enum/enums';
 import { User, UserSchema } from '../users/users.schema';
 
 export type OrderDocument = Order & mongoose.Document;
-
-@Schema({ timestamps: true })
-export class Order {
+export type OrderItemDocument = OrderItem & mongoose.Document;
+@Schema()
+export class OrderItem {
 
   _id: mongoose.ObjectId;
 
-  @Prop({ type: Number, required: true })
-  problem: Categories;
-
-  @Prop({ type: Number, required: true, default: 0})
-  orderNumber: number;
-
-  @Prop({ type: String, enum: OrderStatus, default: OrderStatus.Open })
-  status: OrderStatus;
-
-  @Prop(CustomerSchema)
-  customer: Customer;
+  @Prop({ type: String, enum: OrderItemStatus, default: OrderItemStatus.Open })
+  status: OrderItemStatus;
 
   @Prop(PrinterSchema)
   printer: Printer;
-
-  @Prop({ type: Date })
-  createdAt: Date;
-
-  @Prop({ type: Date })
-  updatedAt: Date;
-
-  @Prop(UserSchema)
-  technicalUser: User;
   
   @Prop({ type: Number, required: false, default: 0 })
   currentPB: number;
@@ -62,11 +44,47 @@ export class Order {
   @Prop({ type: Date })
   finishedAt: Date;
 
+  constructor(orderItem: Partial<OrderItem>) {
+    Object.assign(this, orderItem);
+  }
+}
+
+export const OrderItemSchema = SchemaFactory.createForClass(OrderItem);
+
+@Schema({ timestamps: true })
+export class Order {
+
+  _id: mongoose.ObjectId;
+
+  @Prop({ type: Number, required: true })
+  problem: Categories;
+
+  @Prop({ type: Number, required: true, default: 0})
+  orderNumber: number;
+
+  @Prop({ type: String, enum: OrderStatus, default: OrderStatus.Open })
+  status: OrderStatus;
+
+  @Prop(CustomerSchema)
+  customer: Customer;
+
+  @Prop({ type: Date })
+  createdAt: Date;
+
+  @Prop({ type: Date })
+  updatedAt: Date;
+
+  @Prop(UserSchema)
+  technicalUser: User;
+
   @Prop(UserSchema)
   createdBy: User;
 
   @Prop(UserSchema)
   lastUpdatedBy: User;
+
+  @Prop([OrderItemSchema])
+  items: OrderItem[];
 
   constructor(order: Partial<Order>) {
     Object.assign(this, order);

@@ -27,8 +27,7 @@ export default function OrderCreate(props) {
 
   const orderFormSchema = yup.object().shape({
     problem: yup.object().required('error.field.required').nullable(),
-    customer: yup.object().required('error.field.required').nullable(),
-    printer: yup.object().required('error.field.required').nullable()
+    customer: yup.object().required('error.field.required').nullable()
   });
 
   const { register, control, handleSubmit, formState, formState: { errors }, reset } = useForm({
@@ -36,15 +35,9 @@ export default function OrderCreate(props) {
   });
 
   const onSubmit = async (data) => {
-    const { problem: {_id:problem}, customer: {_id:customer}, printer: {_id:printer} } = data;
-    await dispatch({ type: sagaActions.SAVE_ORDER, payload: { problem, customer, printer }, callback: () => reset({ problem: null, customer: null, printer: null })});
+    const { problem: {_id:problem}, customer: {_id:customer} } = data;
+    await dispatch({ type: sagaActions.SAVE_ORDER, payload: { problem, customer }, callback: () => reset({ problem: null, customer: null })});
   } 
-
-  const [customer, setCustomer] = React.useState(null);
-
-  const printerPromise = () => new Promise((resolve) => {
-    resolve({ data: { items :  customer?.printers || [] }});
-  });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -92,7 +85,7 @@ export default function OrderCreate(props) {
                     url='customers?status=active&limit=10000'
                     loadingText={t('label.loading')}
                     noOptionsText={t('error.customer.empty')}
-                    onChange={(e, data) => {setCustomer(data); onChange(data)}}
+                    onChange={(e, data) => onChange(data)}
                     value={value || null}
                     InputProps={{
                       value: value || '',
@@ -101,33 +94,6 @@ export default function OrderCreate(props) {
                       margin: 'normal',
                       error: formState.isSubmitted && !!errors.customer,
                       helperText: t(errors.customer?.message)
-                    }}/>
-                )}
-              />
-            </GridItem>
-            <GridItem xs={12} sm={12}  md={12}>
-              <Controller
-                control={control}
-                name="printer"
-                inputRef={register()}
-                render={({ field: { onChange, value } }) => (
-                  <CustomAutocomplete 
-                    label={t('label.customer.printer')}
-                    groupBy={(option) => option?.product?.model}
-                    optionLabel={(option) => `${option?.product?.description} (${option?.serialNumber})` }
-                    url={printerPromise}
-                    loadingText={t('label.loading')}
-                    noOptionsText={t('error.printer.empty')}
-                    onChange={(e, data) => onChange(data)}
-                    value={value || null}
-                    disabled={!customer}
-                    InputProps={{
-                      value: value || '',
-                      required: true,
-                      name: 'printer',
-                      margin: 'normal',
-                      error: formState.isSubmitted && !!errors.printer,
-                      helperText: t(errors.printer?.message)
                     }}/>
                 )}
               />

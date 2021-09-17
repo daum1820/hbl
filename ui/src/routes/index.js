@@ -162,12 +162,11 @@ const appRoutes = [
     listSaga: sagaActions.LIST_ORDERS,
     removeSaga: sagaActions.DELETE_ORDER,
     pdfContext: 'orders',
-    headers: ['label.order.code', 'label.invoice.customer', 'label.order.createdAt', 'label.customer.printer', 'label.category.type.problem', 'label.order.technicalUser', 'label.order.status.text'],
+    headers: ['label.order.code', 'label.invoice.customer', 'label.order.createdAt', 'label.category.type.problem', 'label.order.technicalUser', 'label.order.status.text'],
     properties: [
       'orderNumber', 
       (item) => `${item.customer.name} (${item.customer.registrationNr})`,
       (item) => formatFullDate(item.createdAt),
-      (item) => `${item.printer.product.model} (${item.printer.serialNumber})`,
       (item) => `${item.problem._id} - ${item.problem.name}`,
       (item) => !!item.technicalUser ? `${item.technicalUser?.name} ${item.technicalUser?.lastName }` : null,
       (item) => {

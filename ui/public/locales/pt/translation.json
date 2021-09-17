@@ -44,7 +44,11 @@
     "order" : {
       "save.success": "OS foi salva com sucesso",
       "remove.success": "OS foi removida com sucesso",
-      "status.success": "Status da OS foi salvo com sucesso"
+      "status.success": "Status da OS foi salvo com sucesso",
+      "item": {
+        "remove.success": "Equipamento foi removida com sucesso",
+        "add.success": "Equipamento foi adicionada com sucesso"
+      }
     },
     "customer" : {
       "save.success": "Cliente foi salvo com sucesso",
@@ -66,6 +70,8 @@
       "reopen": "Re-abrir fatura",
       "close": "Faturar",
       "order" :{
+        "add": "Incluir equipamento na OS",
+        "remove": "Remover equipamento da OS",
         "open": "Re-abrir OS",
         "wip": "Iniciar atendimento",
         "close": "Finalizar atendimento"
@@ -261,7 +267,8 @@
       "product": "Salvar produto",
       "customer": "Salvar cliente",
       "invoice": "Salvar fatura",
-      "order": "Salvar OS"
+      "order": "Salvar OS",
+      "equip": "Salvar Equipamento"
     },
     "create":{
       "invoice" : "Gerar fatura",

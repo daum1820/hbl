@@ -32,7 +32,13 @@ export enum DueDate {
   Days30 = '30d',
   Days45 = '45d',
 }
+
 export enum OrderStatus {
+  Open = 'open',
+  Closed = 'closed',
+}
+
+export enum OrderItemStatus {
   Open = 'open',
   Closed = 'closed',
   Wip = 'wip',

@@ -33,7 +33,7 @@ export function formatHour(date) {
   if (typeof date === 'string' ) {
     date = new Date(date);
   }
-  return moment(date.getTime()).format('hh:mm');
+  return moment(date.getTime()).format('HH:mm');
 }
 
 export function formatPrice(value = '') {

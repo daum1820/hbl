@@ -3,8 +3,8 @@ import { BaseQueryDto, BasePaginationDto } from '../base/base.dto';
 import { reduceModel } from '../utils';
 import { Public } from '../commons/decorators/public.decorator';
 import { Roles } from '../commons/decorators/roles.decorator';
-import { Role } from '../commons/enum/enums';
-import { OrderDto, OrderStatusDto } from './orders.dto';
+import { Role, OrderStatus } from '../commons/enum/enums';
+import { OrderDto, OrderItemDto, OrderStatusDto } from './orders.dto';
 import { OrderDocument } from './orders.schema';
 import { OrdersService } from './orders.service';
 
@@ -73,7 +73,7 @@ export class OrdersController {
 
   @Put(':id')
   async update(@Param('id') id: string, @Body() orderDto: OrderDto, @Req() req): Promise<OrderDto> {
-    const { _id, ...toUpdateDto } = orderDto;
+    const { _id, items, ...toUpdateDto } = orderDto;
 
     this.logger.log(`> update - ${JSON.stringify(orderDto)} for id ${id}`);
 
@@ -91,24 +91,64 @@ export class OrdersController {
     return this.readOne(id);
   }
 
-  @Post(':id/assign')
-  async assign(@Param('id') id: string, @Req() req): Promise<OrderDto> {
-    
-    this.logger.log(`> assignToMe - ${JSON.stringify(req.user)} for id ${id}`);
+  @Roles(Role.Admin, Role.Moderator)
+  @Post(':id/item')
+  async addItem(@Param('id') id: string, @Body() orderItem: OrderItemDto, @Req() req): Promise<OrderDto> {
 
-    const existsOrder = await this.ordersService.findOne({ _id: id });
+    this.logger.log(`> addItem - ${JSON.stringify(orderItem)} for order id ${id}`);
 
-    if (!existsOrder) {
+    const orderExists = await this.ordersService.findOne({ _id: id });
+    if (!orderExists) {
       const message = `Order with id '${id}' not exists.`;
       this.logger.error(message);
       throw new InternalServerErrorException(message);
     }
 
-    existsOrder.technicalUser = req.user._id;
+    const updatedOrder: OrderDocument = await this.ordersService.addItem(id, orderItem, req.user);
 
-    const updatedOrder: OrderDocument = await this.ordersService.update(id, existsOrder, req.user);
+    this.logger.log(`< addItem - result: ${JSON.stringify(updatedOrder)}`);
+    return this.readOne(id);
+  }
 
-    this.logger.log(`< update - result: ${JSON.stringify(updatedOrder)}`);
+  @Roles(Role.Admin, Role.Moderator)
+  @Put(':id/item')
+  async updateItem(@Param('id') id: string, @Body() orderItem: OrderItemDto, @Req() req): Promise<OrderDto> {
+
+    this.logger.log(`> updateItem - ${JSON.stringify(orderItem)} for order id ${id}`);
+
+    const filterOrder = { _id: id, 'items._id' : orderItem._id };
+
+    const orderWithOrderItem = await this.ordersService.findOne(filterOrder);
+    if (!orderWithOrderItem) {
+      const message = `OrderItem with id '${orderItem._id}' for Order with id '${id}' not exists.`;
+      this.logger.error(message);
+      throw new InternalServerErrorException(message);
+    }
+
+    const updatedOrder: OrderDocument = await this.ordersService.updateItem(id, orderItem, req.user);
+
+    this.logger.log(`< updateItem - result: ${JSON.stringify(updatedOrder)}`);
+    return this.readOne(id);
+  }
+
+  @Roles(Role.Admin, Role.Moderator)
+  @Delete(':id/item')
+  async removeItem(@Param('id') id: string, @Body() orderItem: OrderItemDto, @Req() req): Promise<OrderDto> {
+
+    this.logger.log(`> removeItem - ${JSON.stringify(orderItem)} for order id ${id}`);
+
+    const filterOrder = { _id: id, 'items._id' : orderItem._id };
+
+    const orderWithOrderItem = await this.ordersService.findOne(filterOrder);
+    if (!orderWithOrderItem) {
+      const message = `OrderItem with id '${orderItem._id}' for Order with id '${id}' not exists.`;
+      this.logger.error(message);
+      throw new InternalServerErrorException(message);
+    }
+
+    const updatedOrder: OrderDocument = await this.ordersService.removeItem(id, orderItem, req.user);
+
+    this.logger.log(`< removeItem - result: ${JSON.stringify(updatedOrder)}`);
     return this.readOne(id);
   }
 
@@ -132,7 +172,7 @@ export class OrdersController {
   @Put(':id/changeStatus')
   async changeStatus(@Param('id') id: string, @Body() statusDto: OrderStatusDto, @Req() req): Promise<OrderDto> {
     this.logger.log(`> changeStatus - ${id}`);
-    const result = await this.ordersService.changeStatus(id, statusDto.status, req.user);
+    const result = await this.ordersService.changeStatus(id, statusDto, req.user);
 
     if (!result) {
       const message = `Order's status with id '${id}' could not be updated.`;

@@ -23,11 +23,14 @@ import * as yup from 'yup';
 import CardIcon from 'components/Card/CardIcon';
 import { Receipt } from '@material-ui/icons';
 import CardFooter from 'components/Card/CardFooter';
-import NumberComponent from 'components/Common/NumberComponent';
 import { baseURL } from 'utils';
-import { formatInt } from 'utils';
-import { KeyboardDateTimePicker, DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { OrderStatus } from './OrderStatus';
+import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { OrderPrinter } from './OrderPrinter';
+import classNames from 'classnames';
+import Success from 'components/Typography/Success';
+import Danger from 'components/Typography/Danger';
+import { DisplayWhen } from 'utils/auth.utils';
+import { hasRole } from 'utils/auth.utils';
 
 const useStyles = makeStyles(ordersStyle);
 
@@ -38,41 +41,17 @@ export function OrderDetails({color = 'warning'}) {
   const { t } = useTranslation();
 
   const order = useSelector(getOrderSelector(id), shallowEqual);
-  const [isClosed, setIsClosed] = React.useState(order?.status === 'closed');
-  const [isOpen, setIsOpen] = React.useState(order?.status === 'open');
-  const [startedAt, setStartedAt] = React.useState(order?.startedAt || new Date());
 
   const orderFormSchema = yup.object().shape({
     orderNumber: yup.number().positive('error.field.positive').required('error.field.required'),
     createdAt: yup.date().required('error.field.required').nullable().typeError('error.field.required'),
     customer: yup.object().required('error.field.required').nullable().typeError('error.field.required'),
-    printer: yup.object().required('error.field.required').nullable().typeError('error.field.required'),
     problem: yup.object().required('error.field.required').nullable().typeError('error.field.required'),
     status: yup.string(),
-    technicalUser: yup.object().when('status', {
-      is: (val) => val !== 'open',
-      then: yup.object().required('error.field.required').nullable().typeError('error.field.required'),
-      otherwise: yup.object().nullable()
-    }),
-    startedAt: yup.date().when('status', {
-      is: (val) => val !== 'open',
-      then: yup.date().required('error.field.required').nullable().typeError('error.field.required'),
-      otherwise: yup.date().nullable()
-    }),
-    finishedAt: yup.date().when('status', {
-      is: (val) => val === 'closed',
-      then: yup.date().required('error.field.required').nullable().typeError('error.field.required'),
-      otherwise: yup.date().nullable()
-    }),
-    currentPB: yup.string(),
-    currentColor: yup.string(),
-    points: yup.string(),
-    actions: yup.string(),
-    notes: yup.string(),
-    nos: yup.string()
+    technicalUser: yup.object().required('error.field.required').nullable().typeError('error.field.required'),
   });
 
-  const { register, control, handleSubmit, formState, formState: { errors, isDirty }, setValue, reset } = useForm({
+  const { register, control, handleSubmit, formState, formState: { errors }, reset } = useForm({
     resolver: yupResolver(orderFormSchema),
     defaultValues: {
       ...order,
@@ -80,11 +59,10 @@ export function OrderDetails({color = 'warning'}) {
   });
 
   const onSubmit = async (data) => {
-    let { problem: {_id:problem }, customer: {_id:customer }, printer: {_id:printer }, technicalUser, currentColor, currentPB, ...rest} = data;
+    let { problem: {_id:problem }, customer: {_id:customer }, technicalUser, ...rest} = data;
     technicalUser =  !!technicalUser ? technicalUser._id : null;
-    currentColor = formatInt(currentColor);
-    currentPB = formatInt(currentPB);
-    await dispatch({ type: sagaActions.SAVE_ORDER, payload: { id, problem, customer, printer, technicalUser, currentColor, currentPB, ...rest }});
+
+    await dispatch({ type: sagaActions.SAVE_ORDER, payload: { id, problem, customer, technicalUser, ...rest }});
   }
 
   React.useEffect(() => {
@@ -94,31 +72,59 @@ export function OrderDetails({color = 'warning'}) {
     }
 
     reset({...order });
-    setIsClosed(order?.status === 'closed');
-    setIsOpen(order?.status === 'open');
-    setCustomer(order?.customer);
-    setStartedAt(order?.startedAt);
-  }, [dispatch, reset, order, id, isClosed]);
 
+  }, [dispatch, reset, order, id]);
 
-  const [customer, setCustomer] = React.useState(null);
+  const printers = order?.customer?.printers.filter(p => hasRole(['Admin', 'Moderator']) ? true : Object.values(order?.items)?.some(i => i.printer._id === p._id)).map((printer, key) => (
+    <OrderPrinter 
+      printer={printer}
+      color={color}
+      orderId={id} 
+      key={key}
+      itemOrder={Object.values(order?.items)?.find(i => i.printer._id === printer._id)}/>
+  ))
 
-  const printerPromise = () => new Promise((resolve) => {
-    resolve({ data: { items :  customer?.printers || [] }});
-  });
+  const actualContextList = {
+    closed: {
+      icon: 'published_with_changes',
+      label: 'label.order.status.closed',
+      actionLabel: 'label.action.order.close',
+      color: 'success',
+      component: Success,
+      spin: false
+    },
+    open: {
+      icon: 'sync',
+      label: 'label.order.status.open',
+      actionLabel: 'label.action.order.open',
+      color: 'danger',
+      component: Danger,
+      spin: false
+    }
+  }
+  const actualContext = actualContextList[order?.status || 'open'];
 
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <Card style={{ minHeight: '510px'}}>
+          <Card>
             <CardHeader color={color} icon>
               <CardIcon color={color}>
                 <Receipt /> 
               </CardIcon>
               <GridContainer justifyContent='space-between'>
                 <h2 className={classes.cardTitle}>{t('label.order.details' )}</h2>
-                { !!order ? <OrderStatus color={color} id={id} status={order?.status} isDirty={isDirty} /> : null}
+                <div className={classes.statusHeaderTitle}>
+                  <Icon className={classNames({ [classes[actualContext.color]]: actualContext.color })}>
+                    {actualContext.icon}
+                  </Icon>
+                  <div style={{ marginTop: '15px' }}>
+                    <actualContext.component>
+                      {t(actualContext.label)}
+                    </actualContext.component>
+                  </div>
+                </div>
               </GridContainer>
             </CardHeader>
             <CardBody className={classes.textCenter}>
@@ -162,17 +168,12 @@ export function OrderDetails({color = 'warning'}) {
                           value={value ? moment(value) : null}
                           fullWidth
                           disabled
-                          KeyboardButtonProps={{
-                            'aria-label': 'createdAt date',
-                          }}
                         />
                       )}
                     />
                   </MuiPickersUtilsProvider>
                 </GridItem>
-              </GridContainer>
-              <GridContainer>
-                <GridItem xs={12} sm={12}  md={4}>
+                <GridItem xs={12} sm={12}  md={3}>
                   <Controller
                     control={control}
                     name="customer"
@@ -185,9 +186,9 @@ export function OrderDetails({color = 'warning'}) {
                         url='customers?status=active&limit=10000'
                         loadingText={t('label.loading')}
                         noOptionsText={t('error.customer.empty')}
-                        onChange={(e, data) => {setCustomer(data); setValue('printer', null); onChange(data)}}
+                        onChange={(e, data) => onChange(data)}
                         value={value || null}
-                        disabled={isClosed}
+                        disabled
                         InputProps={{
                           margin: "normal",
                           value: value || '',
@@ -199,189 +200,7 @@ export function OrderDetails({color = 'warning'}) {
                     )}
                   />
                 </GridItem>
-                <GridItem xs={12} sm={12}  md={1}>
-                  <Controller
-                    control={control}
-                    name="currentPB"
-                    inputRef={register()}
-                    render={({ field: { onChange, value } }) => (
-                      <TextField
-                        variant="standard"
-                        margin="normal"
-                        fullWidth
-                        id="currentPB"
-                        label={t('label.order.pb')}
-                        name="currentPB"
-                        value={value}
-                        disabled={isClosed}
-                        onChange={e => onChange(e.target.value)}
-                        InputLabelProps={{ shrink: true }}
-                        InputProps={{
-                          inputComponent: NumberComponent,
-                        }}
-                      />
-                    )}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12}  md={1}>
-                  <Controller
-                    control={control}
-                    name="currentColor"
-                    inputRef={register()}
-                    render={({ field: { onChange, value } }) => (
-                      <TextField
-                        variant="standard"
-                        margin="normal"
-                        fullWidth
-                        id="currentColor"
-                        label={t('label.order.color')}
-                        name="currentColor"
-                        value={value}
-                        disabled={isClosed}
-                        onChange={e => onChange(e.target.value)}
-                        InputLabelProps={{ shrink: true }}
-                        InputProps={{
-                          inputComponent: NumberComponent,
-                        }}
-                      />
-                    )}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12}  md={2}>
-                  <Controller
-                    control={control}
-                    name="nos"
-                    inputRef={register()}
-                    render={({ field: { onChange, value } }) => (
-                      <TextField
-                        variant="standard"
-                        margin="normal"
-                        fullWidth
-                        id="nos"
-                        label={t('label.order.nos')}
-                        name="nos"
-                        value={value || '' }
-                        disabled={isClosed}
-                        onChange={e => onChange(e.target.value)}
-                      />
-                    )}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
-                  <MuiPickersUtilsProvider libInstance={moment} utils={MomentUtils} locale="pt-br">
-                    <Controller
-                      control={control}
-                      name="startedAt"
-                      inputRef={register()}
-                      render={({ field: { onChange, value } }) => (
-                        <KeyboardDateTimePicker
-                          disableFuture
-                          invalidDateMessage={t('error.field.invalid.format')}
-                          variant="inline"
-                          format={t('format.dateTime')}
-                          margin="normal"
-                          id="startedAt"
-                          label={t('label.order.startedAt')}
-                          value={value ? moment(value) : null}
-                          onChange={date => { onChange(date); setStartedAt(date)}}
-                          fullWidth
-                          disabled={isClosed}
-                          KeyboardButtonProps={{
-                            'aria-label': 'change date',
-                          }}
-                        />
-                      )}
-                    />
-                  </MuiPickersUtilsProvider>
-                </GridItem>
-              </GridContainer>
-              <GridContainer>
-                <GridItem xs={12} sm={12}  md={4}>
-                  <Controller
-                    control={control}
-                    name="printer"
-                    inputRef={register()}
-                    render={({ field: { onChange, value } }) => (
-                      <CustomAutocomplete 
-                        label={t('label.customer.printer')}
-                        groupBy={(option) => option?.product?.model}
-                        optionLabel={(option) => `${option?.product?.description} (${option?.serialNumber})` }
-                        url={printerPromise}
-                        loadingText={t('label.loading')}
-                        noOptionsText={t('error.printer.empty')}
-                        onChange={(e, data) => onChange(data)}
-                        value={value || null}
-                        disabled={!customer || isClosed}
-                        InputProps={{
-                          value: value || '',
-                          required: true,
-                          name: 'printer',
-                          margin: 'normal',
-                          error: formState.isSubmitted && !!errors.printer,
-                          helperText: t(errors.printer?.message)
-                        }}/>
-                    )}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12}  md={4}>
-                  <Controller
-                    control={control}
-                    name="technicalUser"
-                    inputRef={register()}
-                    render={({ field: { onChange, value } }) => (
-                      <CustomAutocomplete 
-                        label={t('label.order.technicalUser')}
-                        optionLabel={(option) => `${option?.name || ''} ${option?.lastName || ''}`}
-                        optionSelected={(option, value) => option._id === value._id}
-                        url='users?status=active&limit=10000'
-                        loadingText={t('label.loading')}
-                        noOptionsText={t('error.users.empty')}
-                        onChange={(e, data) => onChange(data)}
-                        value={value || null}
-                        disabled={isClosed}
-                        InputProps={{
-                          margin: "normal",
-                          value: value || '',
-                          required: !isOpen,
-                          name: 'technicalUser',
-                          error: formState.isSubmitted && !!errors.technicalUser,
-                          helperText: t(errors.technicalUser?.message)
-                        }}/>
-                    )}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
-                  <MuiPickersUtilsProvider libInstance={moment} utils={MomentUtils} locale="pt-br">
-                    <Controller
-                      control={control}
-                      name="finishedAt"
-                      inputRef={register()}
-                      render={({ field: { onChange, value } }) => (
-                        <KeyboardDateTimePicker
-                          disableFuture
-                          invalidDateMessage={t('error.field.invalid.format')}
-                          variant="inline"
-                          format={t('format.dateTime')}
-                          margin="normal"
-                          id="finishedAt"
-                          label={t('label.order.finishedAt')}
-                          value={value ? moment(value) : null}
-                          onChange={date => onChange(date)}
-                          minDate={startedAt || new Date()}
-                          minDateMessage={t('error.field.minDate')}
-                          fullWidth
-                          disabled={isClosed}
-                          KeyboardButtonProps={{
-                            'aria-label': 'change date',
-                          }}
-                        />
-                      )}
-                    />
-                  </MuiPickersUtilsProvider>
-                </GridItem>
-              </GridContainer>
-              <GridContainer >
-                <GridItem xs={12} sm={12}  md={4}>
+                <GridItem xs={12} sm={12}  md={3}>
                   <Controller
                     control={control}
                     name="problem"
@@ -395,7 +214,7 @@ export function OrderDetails({color = 'warning'}) {
                         noOptionsText={t('error.category.problem.empty')}
                         onChange={(e, data) => onChange(data)}
                         value={value || null}
-                        disabled={isClosed}
+                        disabled={!hasRole(['Admin', 'Moderator'])}
                         InputProps={{
                           value: value || '',
                           required: true,
@@ -407,87 +226,56 @@ export function OrderDetails({color = 'warning'}) {
                     )}
                   />
                 </GridItem>
-                <GridItem xs={12} sm={12}  md={4}>
-                  <Controller
-                    control={control}
-                    name="actions"
-                    inputRef={register()}
-                    render={({ field: { onChange, value } }) => (
-                      <TextField
-                        variant="standard"
-                        margin="normal"
-                        fullWidth
-                        id="actions"
-                        label={t('label.order.action')}
-                        name="actions"
-                        value={value || '' }
-                        disabled={isClosed}
-                        onChange={e => onChange(e.target.value)}
-                      />
-                    )}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12}  md={4}>
-                  <Controller
-                    control={control}
-                    name="points"
-                    inputRef={register()}
-                    render={({ field: { onChange, value } }) => (
-                      <TextField
-                        variant="standard"
-                        margin="normal"
-                        fullWidth
-                        id="points"
-                        label={t('label.order.points')}
-                        name="points"
-                        value={value || '' }
-                        disabled={isClosed}
-                        onChange={e => onChange(e.target.value)}
-                      />
-                    )}
-                  />
-                </GridItem>
-              </GridContainer>
-              <GridContainer>
-                <GridItem xs={12} sm={12}  md={12}>
-                  <Controller
-                    control={control}
-                    name="notes"
-                    inputRef={register()}
-                    render={({ field: { onChange, value } }) => (
-                      <TextField
-                        variant="standard"
-                        margin="normal"
-                        fullWidth
-                        id="notes"
-                        label={t('label.order.notes')}
-                        name="notes"
-                        value={value || '' }
-                        disabled={isClosed}
-                        onChange={e => onChange(e.target.value)}
-                      />
-                    )}
-                  />
-                </GridItem>
+                <DisplayWhen roles={['Admin', 'Moderator']}>
+                  <GridItem xs={12} sm={12}  md={2}>
+                    <Controller
+                      control={control}
+                      name="technicalUser"
+                      inputRef={register()}
+                      render={({ field: { onChange, value } }) => (
+                        <CustomAutocomplete 
+                          label={t('label.order.technicalUser')}
+                          optionLabel={(option) => `${option?.name || ''} ${option?.lastName || ''}`}
+                          optionSelected={(option, value) => option._id === value._id}
+                          url='users?status=active&limit=10000'
+                          loadingText={t('label.loading')}
+                          noOptionsText={t('error.users.empty')}
+                          onChange={(e, data) => onChange(data)}
+                          value={value || null}
+                          InputProps={{
+                            margin: "normal",
+                            value: value || '',
+                            required: true,
+                            name: 'technicalUser',
+                            error: formState.isSubmitted && !!errors.technicalUser,
+                            helperText: t(errors.technicalUser?.message)
+                          }}/>
+                      )}
+                    />
+                  </GridItem>
+                </DisplayWhen>
               </GridContainer>
             </CardBody>
             <CardFooter>
+              <DisplayWhen roles={['Admin', 'Moderator']}>
                 <Button
                   type='submit'
                   color={color}>
                   {t('button.save.order')}
                 </Button>
-                <Tooltip placement='left' title={t('export.pdf.order')}>
-                  <a href={`${baseURL}orders/${id}/export`} target="_blank" rel="noreferrer">
-                    <IconButton type='button'>
-                      <Icon>picture_as_pdf</Icon>
-                    </IconButton>
-                  </a>
-                </Tooltip>
-              </CardFooter>
+              </DisplayWhen>
+              <Tooltip placement='left' title={t('export.pdf.order')}>
+                <a href={`${baseURL}orders/${id}/export`} target="_blank" rel="noreferrer">
+                  <IconButton type='button'>
+                    <Icon>picture_as_pdf</Icon>
+                  </IconButton>
+                </a>
+              </Tooltip>
+            </CardFooter>
           </Card>            
         </form>
       </GridItem>
+      {printers}
     </GridContainer>
   )
 }

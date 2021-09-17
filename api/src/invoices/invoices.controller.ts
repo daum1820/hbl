@@ -85,7 +85,7 @@ export class InvoicesController {
   @Roles(Role.Admin)
   @Put(':id')
   async update(@Param('id') id: string, @Body() invoiceDto: InvoiceDto, @Req() req): Promise<InvoiceDto> {
-    const { _id, ...toUpdateDto } = invoiceDto;
+    const { _id, items, ...toUpdateDto } = invoiceDto;
 
     this.logger.log(`> update - ${JSON.stringify(invoiceDto)} for id ${id}`);
 
@@ -97,9 +97,7 @@ export class InvoicesController {
       throw new InternalServerErrorException(message);
     }
     
-    const {items, ...restDto} = toUpdateDto;
-
-    const updatedInvoice: InvoiceDocument = await this.invoicesService.update(id, restDto, req.user);
+    const updatedInvoice: InvoiceDocument = await this.invoicesService.update(id, toUpdateDto, req.user);
 
     this.logger.log(`< update - result: ${JSON.stringify(updatedInvoice)}`);
     return this.readOne(id);

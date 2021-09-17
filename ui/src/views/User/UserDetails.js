@@ -241,9 +241,6 @@ export default function UserDetails({color = 'primary'}) {
                             value={value ? moment(value) : null}
                             onChange={date => onChange(date)}
                             fullWidth
-                            KeyboardButtonProps={{
-                              'aria-label': 'change date',
-                            }}
                           />
                         )}
                       />

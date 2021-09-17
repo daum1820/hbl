@@ -53,7 +53,6 @@ export default function DashboardItem(props) {
       if (location.pathname === `${path}/${context}`) {
         for(var key of query.keys()) {
           if (key !== 'search' && filters[key] !== query.get(key)) {
-            console.info('returnnnning', filters[key], query.get(key));
             return false;
           }
           delete filters[key];
@@ -150,7 +149,7 @@ export default function DashboardItem(props) {
 
   return (
     <Card>
-      <CardHeader color={color} stats icon style={{ minHeight: '85px' }}>
+      <CardHeader color={color} stats icon>
         <CardIcon color={color}>
           { typeof ItemIcon === 'string' ? <Icon>{ItemIcon}</Icon>: <ItemIcon/> } 
         </CardIcon>

@@ -150,9 +150,6 @@ export function InvoicesDetails({color = 'danger'}) {
                           value={value ? moment(value) : null}
                           fullWidth
                           disabled
-                          KeyboardButtonProps={{
-                            'aria-label': 'createdAt date',
-                          }}
                         />
                       )}
                     />
@@ -296,9 +293,6 @@ export function InvoicesDetails({color = 'danger'}) {
                           disabled={isClosed}
                           error={ formState.isSubmitted && (!!errors.dueDate) }
                           helperText={t(errors.dueDate?.message)}
-                          KeyboardButtonProps={{
-                            'aria-label': 'due date',
-                          }}
                         />
                       )}
                     />
@@ -324,9 +318,6 @@ export function InvoicesDetails({color = 'danger'}) {
                           disabled={isClosed}
                           error={ formState.isSubmitted && (!!errors.paidDate) }
                           helperText={t(errors.paidDate?.message)}
-                          KeyboardButtonProps={{
-                            'aria-label': 'paid date',
-                          }}
                         />
                       )}
                     />

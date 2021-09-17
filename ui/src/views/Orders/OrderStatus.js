@@ -16,7 +16,7 @@ import classNames from 'classnames';
 const useStyles = makeStyles(ordersStyle);
 
 export function OrderStatus(props) {
-  const { id, status, isDirty } = props;
+  const { id, itemOrderId, status, isDirty } = props;
   const dispatch = useDispatch();
   const classes = useStyles();
   const { t } = useTranslation();
@@ -31,12 +31,21 @@ export function OrderStatus(props) {
 
   const handleStatusChange = async (event, status) => {
     if (event.type === 'NEXT') {
-      await dispatch({ type: sagaActions.ORDER_CHANGE_STATUS, payload: { status, id, message: 'message.order.status.success' } });
+      await dispatch({ type: sagaActions.ORDER_CHANGE_STATUS, payload: { itemOrderId, status, id, message: 'message.order.status.success' } });
     }
   };
   
   const actualContext = state.context[state.value];
   const nextContext = state.context[state.meta[`order.${state.value}`].context];
+
+  const stateButton = !!id ? (
+    <Tooltip placement='top' title={isDirty ? t('error.save.order.first') : ''}>
+      <div style={{ marginRight: '15px' }}>
+        <Button size='sm' aria-label="list" color={nextContext.color} className={classes.statusButton} onClick={() => send('NEXT')} disabled={isDirty}>
+          <Icon style={{ marginRight: '5px' }} className={classNames({ [classes.spin]: nextContext.spin})}>{nextContext.icon}</Icon> {t(nextContext.actionLabel)}
+        </Button>
+      </div>
+    </Tooltip>) : null;
 
   return (
     <div className={classes.statusHeader}>
@@ -52,13 +61,7 @@ export function OrderStatus(props) {
           </div>
         </div>
         <GridItem>
-        <Tooltip placement='top' title={isDirty ? t('error.save.order.first') : ''}>
-          <div>
-            <Button size='sm' aria-label="list" color={nextContext.color} className={classes.statusButton} onClick={() => send('NEXT')} disabled={isDirty}>
-              <Icon style={{ marginRight: '5px' }} className={classNames({ [classes.spin]: nextContext.spin})}>{nextContext.icon}</Icon> {t(nextContext.actionLabel)}
-            </Button>
-          </div>
-        </Tooltip>
+          {stateButton}
         </GridItem>
       </GridContainer>
     </div>

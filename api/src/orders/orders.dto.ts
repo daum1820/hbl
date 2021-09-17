@@ -4,37 +4,21 @@ import { Printer } from '../printers/printers.schema';
 import { BaseIdDto } from '../base/base.dto';
 
 import { Customer } from '../customers/customers.schema';
-import { OrderDocument } from './orders.schema';
-import { OrderStatus } from '../commons/enum/enums';
+import { OrderDocument, OrderItemDocument } from './orders.schema';
+import { OrderStatus, OrderItemStatus } from '../commons/enum/enums';
 import { User } from '../users/users.schema';
+import { reduceModel } from 'src/utils';
 
 export class OrderStatusDto {
-  status: OrderStatus
+  status: OrderItemStatus
+  itemOrderId: string
 }
-export class OrderDto extends BaseIdDto {
-
-  @IsNumber()
-  @IsOptional()
-  orderNumber: number;
-
-  @IsNumber()
-  problem: Categories;
-
-  customer: Customer;
+export class OrderItemDto extends BaseIdDto {
 
   printer: Printer;
 
-  @IsEnum(OrderStatus, { each : true })
-  status: OrderStatus;
-
-  @IsDate()
-  createdAt: Date;
-
-  @IsDate()
-  updatedAt: Date;
-
-  @IsOptional()
-  technicalUser: User;
+  @IsEnum(OrderItemStatus, { each : true })
+  status: OrderItemStatus;
   
   @IsNumber()
   @IsOptional()
@@ -68,9 +52,52 @@ export class OrderDto extends BaseIdDto {
   @IsOptional()
   finishedAt: Date;
 
+  constructor(orderItem?: OrderItemDocument) {
+    super(orderItem?._id);
+
+    if (orderItem) {
+      this.status = orderItem.status;
+      this.printer = orderItem.printer;
+      this.currentPB = orderItem.currentPB;
+      this.currentColor = orderItem.currentColor;
+      this.notes = orderItem.notes;
+      this.actions = orderItem.actions;
+      this.points = orderItem.points;
+      this.nos = orderItem.nos;
+      this.startedAt = orderItem.startedAt;
+      this.finishedAt = orderItem.finishedAt;
+    }
+  }
+}
+export class OrderDto extends BaseIdDto {
+
+  @IsNumber()
+  @IsOptional()
+  orderNumber: number;
+
+  @IsNumber()
+  problem: Categories;
+
+  customer: Customer;
+
+  @IsEnum(OrderStatus, { each : true })
+  status: OrderStatus;
+
+  @IsDate()
+  createdAt: Date;
+
+  @IsDate()
+  updatedAt: Date;
+
+  @IsOptional()
+  technicalUser: User;
+
   createdBy: User;
   
   lastUpdatedBy: User;
+
+  @IsOptional()
+  items: {};
 
   constructor(order?: OrderDocument) {
     super(order?._id);
@@ -79,21 +106,13 @@ export class OrderDto extends BaseIdDto {
       this.orderNumber = order.orderNumber;
       this.status = order.status;
       this.customer = order.customer;
-      this.printer = order.printer;
       this.problem = order.problem;
       this.createdAt = order.createdAt;
       this.updatedAt = order.updatedAt;
       this.technicalUser = order.technicalUser;
-      this.currentPB = order.currentPB;
-      this.currentColor = order.currentColor;
-      this.notes = order.notes;
-      this.actions = order.actions;
-      this.points = order.points;
-      this.nos = order.nos;
-      this.startedAt = order.startedAt;
-      this.finishedAt = order.finishedAt;
       this.createdBy = order.createdBy;
       this.lastUpdatedBy = order.lastUpdatedBy;
+      this.items = order.items.reduce(reduceModel(), {});
     }
   }
 }

@@ -1,10 +1,20 @@
 import { successColor } from "assets/jss/material-dashboard-react";
 import { primaryColor } from "assets/jss/material-dashboard-react";
-import { dangerColor } from "assets/jss/material-dashboard-react";
+import { dangerColor, whiteColor, warningColor } from "assets/jss/material-dashboard-react";
 import dashboardStyle from 'assets/jss/material-dashboard-react/views/dashboardStyle.js';
 
 const styles = {
   ...dashboardStyle,
+  selected:{},
+  warning: {
+    '&$selected' :{
+      color: whiteColor,
+      backgroundColor: warningColor[0],
+    },
+    '&$selected:hover' : {
+      backgroundColor: warningColor[1]
+    }
+  },
   spin: {
     animation: '$circular-rotate 1.4s linear infinite',
   },
@@ -35,6 +45,14 @@ const styles = {
     fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
     textDecoration: "none",
     margin: '12px',
+    color: '#666'
+  },
+  cardPrinterTitle: {
+    minHeight: "auto",
+    fontWeight: "300",
+    fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
+    textDecoration: "none",
+    margin: '12px 5px',
     color: '#666'
   },
   headerTitle: {

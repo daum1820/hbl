@@ -6,7 +6,7 @@ import { Invoice, InvoiceItem } from '../invoices/invoices.schema';
 import { Customer } from '../customers/customers.schema';
 import { formatCurrency, formatDate, formatHour, formatReportNr, formatRegistration, hr, formatFullDate, vr } from './pdf.utils';
 import { createWriteStream } from 'fs';
-import { Order } from '../orders/orders.schema';
+import { Order, OrderItem } from '../orders/orders.schema';
 import { SettingsService } from '../settings/settings.service';
 
 @Injectable()
@@ -40,14 +40,22 @@ export class PdfService {
 
     let doc: PDFDocument = new PDFDocument({ margin: 50 });
 
-    await this.generateHeader(doc, 'orderEmail');
-    let lastPosition = this.generateOrderHeader(doc, order, 180);
-    this.generateOrderBody(doc, order, lastPosition);
-    this.generateFooter(doc);
-  
+    let addPage: boolean = false; 
+    for(let orderItem of order.items) {
+      if (addPage) {
+        doc.addPage();
+      } else {
+        addPage = true;
+      }
+      await this.generateHeader(doc, 'orderEmail');
+      let lastPosition = this.generateOrderHeader(doc, order, orderItem, 180);
+      this.generateOrderBody(doc, order, orderItem, lastPosition);
+      this.generateFooter(doc);
+      
+    }
+    
     doc.end();
     doc.pipe(createWriteStream(filepath));
-
 		
     this.logger.log(`PDF successfully read for order ${formatReportNr(order.orderNumber)}`)
 		return doc;
@@ -103,7 +111,7 @@ export class PdfService {
     return custormerInfoPosition + 65;
   }
 
-  generateOrderHeader(doc: PDFDocument, order: Order, position: number) {
+  generateOrderHeader(doc: PDFDocument, order: Order, orderItem: OrderItem, position: number) {
     this.logger.log(`> generateOrderHeader - ${JSON.stringify(order.customer)}`);
     
     doc
@@ -125,9 +133,9 @@ export class PdfService {
       .text('Aberto em:', 50, custormerInfoPosition + 15)
       .text(formatFullDate(order.createdAt), 150, custormerInfoPosition + 15)
       .text('Modelo:', 50, custormerInfoPosition + 30)
-      .text(order.printer?.product?.model, 150, custormerInfoPosition + 30)
+      .text(orderItem.printer?.product?.model, 150, custormerInfoPosition + 30)
       .text('Série:', 50, custormerInfoPosition + 45)
-      .text(order.printer?.serialNumber, 150, custormerInfoPosition + 45);
+      .text(orderItem.printer?.serialNumber, 150, custormerInfoPosition + 45);
 
     hr(doc, custormerInfoPosition + 60);
     this.logger.log(`< generateOrderHeader`);
@@ -260,7 +268,7 @@ export class PdfService {
     return totalAmpountPosition + 25;
   }
 
-  generateOrderBody(doc: PDFDocument, order: Order, position: number) {
+  generateOrderBody(doc: PDFDocument, order: Order, orderItem: OrderItem, position: number) {
     position += 15
 
     doc
@@ -277,19 +285,19 @@ export class PdfService {
       .fontSize(10)
       .font('Helvetica')
       .text('P/B Atual:', 55, bodyPosition)
-      .text(`${order.currentPB || ''}`, 115, bodyPosition - 2) 
+      .text(`${orderItem.currentPB || ''}`, 118, bodyPosition - 2) 
       .text('_____________', 115, bodyPosition)
       .text('Color Atual:', 55, bodyPosition + 30)
-      .text(`${order.currentColor || ''}`, 115, bodyPosition + 30 - 2) 
+      .text(`${orderItem.currentColor || ''}`, 118, bodyPosition + 30 - 2) 
       .text('_____________', 115, bodyPosition + 30)
       .text('Atendimento:', 230, bodyPosition);
 
-    if (!!order.startedAt) {
+    if (!!orderItem.startedAt) {
       doc
-      .text(`${formatDate(order.startedAt)}`, 315, bodyPosition - 2) 
+      .text(`${formatDate(orderItem.startedAt)}`, 315, bodyPosition - 2) 
       .text('______________', 302, bodyPosition) 
       .text('Início:', 230, bodyPosition + 20)
-      .text(`${formatHour(order.startedAt)}`, 325, bodyPosition +20 - 2) 
+      .text(`${formatHour(orderItem.startedAt)}`, 325, bodyPosition +20 - 2) 
       .text('_____________', 302, bodyPosition + 20)        
     } else {
       doc
@@ -297,10 +305,10 @@ export class PdfService {
       .text('Início:', 230, bodyPosition + 20)
       .text('______:______', 302, bodyPosition + 20)
     }
-    if (!!order.finishedAt) {
+    if (!!orderItem.finishedAt) {
       doc
       .text('Término:', 230, bodyPosition + 40)
-      .text(`${formatHour(order.finishedAt)}`, 325, bodyPosition + 40- 2) 
+      .text(`${formatHour(orderItem.finishedAt)}`, 325, bodyPosition + 40- 2) 
       .text('_____________', 302, bodyPosition + 40) 
     } else {
       doc
@@ -310,10 +318,10 @@ export class PdfService {
 
     doc
       .text('Técnico:', 410, bodyPosition)
-      .text(`${order.technicalUser?.name || ''} ${order.technicalUser?.lastName || ''}`, 460, bodyPosition - 2) 
+      .text(`${order.technicalUser?.name || ''} ${order.technicalUser?.lastName || ''}`, 463, bodyPosition - 2) 
       .text('__________________', 460, bodyPosition) 
       .text('N.OS:', 410, bodyPosition + 30)
-      .text(`${order.nos || ''}`, 460, bodyPosition + 30 -2) 
+      .text(`${orderItem.nos || ''}`, 463, bodyPosition + 30 -2) 
       .text('__________________', 460, bodyPosition + 30);
 
     vr(doc, 210, vPosition, 80);
@@ -323,7 +331,7 @@ export class PdfService {
     doc
       .fontSize(9)
       .text('Pendêcias:', 55, vPosition + 100)  
-      .text(`${order.points || ''}`, 115, vPosition + 98) 
+      .text(`${orderItem.points || ''}`, 118, vPosition + 98) 
     hr(doc, vPosition + 107, 115);
     hr(doc, vPosition + 137, 115);
     hr(doc, vPosition + 167);
@@ -334,10 +342,10 @@ export class PdfService {
       .fontSize(10)
       .text('Sintoma:', 55, problemPostion + 15)
       .font("Helvetica-Bold")
-      .text(`${order.problem?._id || ''} - ${order.problem?.name || ''}`, 115, problemPostion + 15, { align: 'center' })
+      .text(`${order.problem?._id || ''} - ${order.problem?.name || ''}`, 118, problemPostion + 15, { align: 'center' })
       .font("Helvetica")
       .text('Ação:', 55, problemPostion + 45)
-      .text(`${order.actions || ''}`, 115, problemPostion + 43);
+      .text(`${orderItem.actions || ''}`, 118, problemPostion + 43);
     
     hr(doc, problemPostion + 52, 115);
     hr(doc, problemPostion + 82, 115);
@@ -347,7 +355,7 @@ export class PdfService {
     doc
       .fontSize(9)
       .text('Observações:', 55, obsPosition)
-      .text(`${order.notes || ''}`, 115, obsPosition - 2);
+      .text(`${orderItem.notes || ''}`, 118, obsPosition - 2);
 
     hr(doc, obsPosition + 7, 115);
     hr(doc, obsPosition + 37, 115);

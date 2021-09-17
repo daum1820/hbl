@@ -55,7 +55,7 @@ export default function InvoiceCreate(props) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
-      <Card style={{ minHeight: '329px'}}>
+      <Card style={{ minHeight: '290px'}}>
         <CardHeader color={color}>
           <h3 className={classes.cardTitleWhite}>{t('label.invoice.new')}</h3>
           <p className={classes.cardCategoryWhite}></p>

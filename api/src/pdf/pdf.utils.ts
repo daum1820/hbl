@@ -45,5 +45,5 @@ export function formatDate(date: Date) {
 }
 
 export function formatHour(date: Date) {
-  return moment(date.getTime()).format('hh:mm');
+  return moment(date.getTime()).format('HH:mm');
 }
