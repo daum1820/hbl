@@ -367,6 +367,10 @@ export class PdfService {
     doc
     .fontSize(9)
     .text('Referente Contrato(a):', 50, position)
+    .text(invoice.notes, 55, position + 20, {
+      width: 500,
+      align: 'left'
+    })
     .text('De acordo com a Lei Complementar Federal n. 116 de 31/07/2003', 125, 700)
     .text(`Valor aproximado dos tributos: PIS (0.65% = ${formatCurrency(invoice.amount * 0.0065)} / COFINS (3.00% =  ${formatCurrency(invoice.amount * 0.03)})`, 125, 710)
   }

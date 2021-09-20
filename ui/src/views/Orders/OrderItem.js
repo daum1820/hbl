@@ -33,7 +33,7 @@ export function OrderItem(props) {
   const [startedAt, setStartedAt] = React.useState(itemOrder?.startedAt || new Date());
 
   const orderFormSchema = yup.object().shape({
-    status: yup.string(),
+    status: yup.string().nullable(),
     startedAt: yup.date().when('status', {
       is: (val) => val !== 'open',
       then: yup.date().required('error.field.required').nullable().typeError('error.field.required'),
@@ -44,15 +44,15 @@ export function OrderItem(props) {
       then: yup.date().required('error.field.required').nullable().typeError('error.field.required'),
       otherwise: yup.date().nullable()
     }),
-    currentPB: yup.string(),
-    currentColor: yup.string(),
-    points: yup.string(),
-    actions: yup.string(),
-    notes: yup.string(),
-    nos: yup.string()
+    currentPB: yup.string().nullable(),
+    currentColor: yup.string().nullable(),
+    points: yup.string().nullable(),
+    actions: yup.string().nullable(),
+    notes: yup.string().nullable(),
+    nos: yup.string().nullable()
   });
 
-  const { register, control, handleSubmit, formState: { isDirty }, reset } = useForm({
+  const { register, control, handleSubmit, formState: { errors, isDirty }, reset } = useForm({
     resolver: yupResolver(orderFormSchema),
     defaultValues: {
       ...itemOrder,
@@ -66,12 +66,13 @@ export function OrderItem(props) {
   }, [itemOrder, reset]);
 
   const onSubmit = async (data) => {
+    console.info(data, errors)
     let { currentColor, currentPB, status, ...rest} = data;
     currentColor = formatInt(currentColor);
     currentPB = formatInt(currentPB);
     await dispatch({ type: sagaActions.ORDER_UPDATE_ITEM, payload: { id, printer, currentColor, currentPB, ...rest }});
   }
-
+  console.info(errors)
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
@@ -251,6 +252,8 @@ export function OrderItem(props) {
                         variant="standard"
                         margin="normal"
                         fullWidth
+                        multiline
+                        minRows={3}
                         id="notes"
                         label={t('label.order.notes')}
                         name="notes"

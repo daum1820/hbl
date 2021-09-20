@@ -73,6 +73,9 @@ export class Invoice {
   @Prop(UserSchema)
   lastUpdatedBy: User;
 
+  @Prop({ required: false })
+  notes: string;
+
   constructor(invoice: Partial<Invoice>) {
     Object.assign(this, invoice);
   }

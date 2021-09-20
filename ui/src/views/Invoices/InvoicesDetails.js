@@ -52,6 +52,7 @@ export function InvoicesDetails({color = 'danger'}) {
     amount: yup.string().default('R$ 0,00'),
     amountToPay: yup.string().default('R$ 0,00'),
     status: yup.string(),
+    notes: yup.string().nullable(),
     paidDate: yup.date().when('status', {
       is: (val) => val !== 'open',
       then: yup.date().required('error.field.required').nullable().typeError('error.field.required'),
@@ -346,6 +347,28 @@ export function InvoicesDetails({color = 'danger'}) {
                             decimalScale: 2
                           }
                         }}
+                      />
+                    )}
+                  />
+                </GridItem>
+                <GridItem xs={12} sm={12}  md={12}>
+                  <Controller
+                    control={control}
+                    name="notes"
+                    inputRef={register()}
+                    render={({ field: { onChange, value } }) => (
+                      <TextField
+                        variant="standard"
+                        margin="normal"
+                        fullWidth
+                        multiline
+                        minRows={3}
+                        id="notes"
+                        label={t('label.order.notes')}
+                        name="notes"
+                        value={value || '' }
+                        disabled={isClosed}
+                        onChange={e => onChange(e.target.value)}
                       />
                     )}
                   />

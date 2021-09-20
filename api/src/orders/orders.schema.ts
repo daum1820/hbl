@@ -62,7 +62,7 @@ export class Order {
   @Prop({ type: Number, required: true, default: 0})
   orderNumber: number;
 
-  @Prop({ type: String, enum: OrderStatus, default: OrderStatus.Open })
+  @Prop({ type: String, enum: OrderStatus, default: OrderStatus.Empty })
   status: OrderStatus;
 
   @Prop(CustomerSchema)

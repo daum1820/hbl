@@ -28,6 +28,8 @@ import { getOrderListSelector } from 'features/orders.feature';
 import Primary from 'components/Typography/Primary';
 import { OrderDetails } from 'views/Orders/OrderDetails';
 import { formatFullDate } from 'utils';
+import Warning from 'components/Typography/Warning';
+import Muted from 'components/Typography/Muted';
 
 const appRoutes = [
   {
@@ -171,7 +173,7 @@ const appRoutes = [
       (item) => !!item.technicalUser ? `${item.technicalUser?.name} ${item.technicalUser?.lastName }` : null,
       (item) => {
         const label = `label.order.status.${item.status.toLowerCase()}`;
-        const Component = item.status === 'open' ? Danger : item.status === 'wip' ? Primary : Success;
+        const Component = item.status === 'open' ? Danger : item.status === 'empty' ? Muted : Success;
         return (<Component><Trans i18nKey={label}/></Component>)
       }],
     listSelector: getOrderListSelector,
@@ -182,7 +184,7 @@ const appRoutes = [
     create: () => false,
     view: () => true,
     remove: () => hasRole(['Admin', 'Moderator']),
-    pdf: () => true
+    pdf: (order) => !!order ? Object.keys(order?.items || {}).length > 0 : true
   },
   {
     path: '/customers',

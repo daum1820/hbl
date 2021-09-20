@@ -31,6 +31,8 @@ import Success from 'components/Typography/Success';
 import Danger from 'components/Typography/Danger';
 import { DisplayWhen } from 'utils/auth.utils';
 import { hasRole } from 'utils/auth.utils';
+import Warning from 'components/Typography/Warning';
+import Muted from 'components/Typography/Muted';
 
 const useStyles = makeStyles(ordersStyle);
 
@@ -72,6 +74,7 @@ export function OrderDetails({color = 'warning'}) {
     }
 
     reset({...order });
+    setHasItems(Object.keys(order?.items || {}).length > 0)
 
   }, [dispatch, reset, order, id]);
 
@@ -88,22 +91,27 @@ export function OrderDetails({color = 'warning'}) {
     closed: {
       icon: 'published_with_changes',
       label: 'label.order.status.closed',
-      actionLabel: 'label.action.order.close',
       color: 'success',
-      component: Success,
-      spin: false
+      component: Success
     },
     open: {
       icon: 'sync',
       label: 'label.order.status.open',
-      actionLabel: 'label.action.order.open',
       color: 'danger',
       component: Danger,
-      spin: false
+    },
+    empty: {
+      icon: 'sync_problem',
+      label: 'label.order.status.empty',
+      color: 'muted',
+      component: Muted
     }
   }
+
   const actualContext = actualContextList[order?.status || 'open'];
 
+  const [hasItems, setHasItems] = React.useState(Object.keys(order?.items || {}).length > 0)
+  
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
@@ -264,12 +272,14 @@ export function OrderDetails({color = 'warning'}) {
                   {t('button.save.order')}
                 </Button>
               </DisplayWhen>
-              <Tooltip placement='left' title={t('export.pdf.order')}>
-                <a href={`${baseURL}orders/${id}/export`} target="_blank" rel="noreferrer">
-                  <IconButton type='button'>
-                    <Icon>picture_as_pdf</Icon>
-                  </IconButton>
-                </a>
+              <Tooltip placement='left' title={hasItems ? t('export.pdf.order') : t('error.printer.itemOrder') }>
+                <div>
+                  <a href={`${baseURL}orders/${id}/export`} target="_blank" rel="noreferrer" style={{ pointerEvents: hasItems ? 'auto' : 'none'}}>
+                    <IconButton type='button' disabled={!hasItems}>
+                      <Icon>picture_as_pdf</Icon>
+                    </IconButton>
+                  </a>
+                </div>
               </Tooltip>
             </CardFooter>
           </Card>            

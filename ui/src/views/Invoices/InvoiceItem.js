@@ -62,7 +62,7 @@ export function InvoiceItem({ id, color }) {
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <Card style={{ minHeight: '388px'}}>
+          <Card style={{ minHeight: '460px'}}>
             <CardHeader color={color} icon>
             <CardIcon color={color}>
               <Print /> 

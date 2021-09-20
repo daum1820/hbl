@@ -34,6 +34,7 @@ export enum DueDate {
 }
 
 export enum OrderStatus {
+  Empty = 'empty',
   Open = 'open',
   Closed = 'closed',
 }

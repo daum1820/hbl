@@ -24,7 +24,7 @@ const useStyles = makeStyles(styles);
 export default function CustomTable(props) {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { tableHead, tableData, tableHeaderColor, view, remove, pdf, callbackView, callbackRemove, pdfContext} = props;
+  const { tableHead, tableData, tableHeaderColor, view, remove, pdf, callbackView, callbackRemove, pdfContext, originalData} = props;
   const [rowId, setRowId] = React.useState();
   const [toRemove, setToRemove] = React.useState();
   const action = view() || remove() || pdf();
@@ -84,7 +84,7 @@ export default function CustomTable(props) {
     </IconButton>
   ) : null;
 
-  const exportBlock = (prop) => pdf() ? (
+  const exportBlock = (prop) => pdf(originalData[prop._id]) ? (
     <Tooltip placement='left' title={t('export.pdf.text')}>
     <a href={`${baseURL}${pdfContext}/${prop._id}/export`} target="_blank" rel="noreferrer" style={{ color: 'inherit', marginLeft: '10px' }}>
       <IconButton justIcon round size="sm" color={rowId === prop._id ? tableHeaderColor : 'transparent'}>

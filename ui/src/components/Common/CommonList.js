@@ -168,6 +168,7 @@ export default function CommonList(props) {
                 tableHeaderColor={color}
                 tableHead={headers}
                 tableData={getData()}
+                originalData={data.items}
                 callbackView={handleActionView}
                 callbackRemove={handleActionRemove}
                 view={view}

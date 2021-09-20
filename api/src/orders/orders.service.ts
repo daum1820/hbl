@@ -22,9 +22,7 @@ export class OrdersService {
     {fieldName: 'orderNumber', fieldType : 'number'},
     {fieldName: 'status', fieldType : 'string'},
     {fieldName: 'customer.name', fieldType : 'string'},
-    {fieldName: 'problem.name', fieldType : 'string'},
-    {fieldName: 'printer.serialNumber', fieldType : 'string'},
-    {fieldName: 'printer.product.model', fieldType : 'string'},
+    {fieldName: 'problem.name', fieldType : 'string'}
   ];
 
 
@@ -200,7 +198,8 @@ export class OrdersService {
 
   private async updateOrderStatus(id: string, lastUpdatedBy: UserDto) {
     const order = await this.model.findById(id).exec();
-    order.status = order.items?.length == 0  || order.items?.some( i => i.status !== OrderItemStatus.Closed) ? OrderStatus.Open : OrderStatus.Closed;
+    order.status = order.items?.length == 0 ? OrderStatus.Empty :
+      order.items?.some( i => i.status !== OrderItemStatus.Closed) ? OrderStatus.Open : OrderStatus.Closed;
     
     return this.model.findByIdAndUpdate(id, {
       ...order,

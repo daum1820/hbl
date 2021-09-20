@@ -130,6 +130,7 @@
       "finishedAt": "Atendimento finalizado em",
       "status" : {
         "text": "Status da OS",
+        "empty": "Sem equipamentos",
         "open": "Em aberto",
         "wip": "Em atendimento",
         "closed": "Finalizada"
@@ -348,7 +349,8 @@
     },
     "printer": {
       "empty": "Nenhum produto ou serviço foi encontrado",
-      "model.exists": "Este código/modelo já existe para este fabricante"
+      "model.exists": "Este código/modelo já existe para este fabricante",
+      "itemOrder": "Nenhum equipamento foi vinculado a OS"
     },
     "user": {
       "empty": "Nenhum usuário foi encontrado",

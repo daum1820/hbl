@@ -83,6 +83,10 @@ export class InvoiceDto extends BaseIdDto {
   
   lastUpdatedBy: User;
 
+  @IsString()
+  @IsOptional()
+  notes: string;
+
   constructor(invoice?: InvoiceDocument) {
     super(invoice?._id);
 
@@ -100,6 +104,7 @@ export class InvoiceDto extends BaseIdDto {
       this.updatedAt = invoice.updatedAt;
       this.createdBy = invoice.createdBy;
       this.lastUpdatedBy = invoice.lastUpdatedBy;
+      this.notes = invoice.notes;
     }
   }
 }

@@ -57,6 +57,7 @@ RegularButton.propTypes = {
     'rose',
     'white',
     'transparent',
+    'muted'
   ]),
   size: PropTypes.oneOf(['sm', 'lg']),
   simple: PropTypes.bool,

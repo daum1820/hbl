@@ -1,4 +1,5 @@
 import { successColor } from "assets/jss/material-dashboard-react";
+import { grayColor } from "assets/jss/material-dashboard-react";
 import { primaryColor } from "assets/jss/material-dashboard-react";
 import { dangerColor, whiteColor, warningColor } from "assets/jss/material-dashboard-react";
 import dashboardStyle from 'assets/jss/material-dashboard-react/views/dashboardStyle.js';
@@ -37,6 +38,10 @@ const styles = {
   },
   primary: {
     color: primaryColor[0],
+    marginTop: '10px'
+  },
+  muted: {
+    color: grayColor[1],
     marginTop: '10px'
   },
   cardTitle: {
