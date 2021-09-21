@@ -25,11 +25,12 @@ import CardFooter from 'components/Card/CardFooter';
 const useStyles = makeStyles(ordersStyle);
 
 export function OrderPrinter(props) {
-  const { color = 'warning', orderId, printer, itemOrder } = props;
+  const { orderId, printer, itemOrder } = props;
   const classes = useStyles();
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
+  const color = 'warning';
 
   const [state, send] = useMachine(orderItemMachine(!!itemOrder ? 'add' : 'remove'), {
     actions: {
@@ -50,7 +51,7 @@ export function OrderPrinter(props) {
 
   const nextContext = state.context[state.meta[`orderItem.${state.value}`].context];
   
-  const [show, setShow] = React.useState(false)
+  const [show, setShow] = React.useState(true)
 
   const orderItemBlock = !!itemOrder ? (
     <CardFooter action style={{ justifyContent: 'center' }}>
@@ -78,7 +79,7 @@ export function OrderPrinter(props) {
                 <h4 className={classes.cardPrinterTitle} style={{ marginTop: '15px' }}>{`(${printer.serialNumber})`}</h4>
               </GridContainer>
               <DisplayWhen roles={['Admin', 'Moderator']}>
-                <GridContainer justifyContent='flex-end'>
+                <GridContainer justifyContent='flex-end' style={{ position: 'absolute', right: '10px' }}>
                   <Tooltip placement='left' title={t(nextContext.actionLabel)}>
                     <div style={{ margin: '10px' }}>
                       <Button justIcon round size='sm' aria-label="list" color={nextContext.color} className={classes.statusButton} onClick={() => send('TOGGLE')}>

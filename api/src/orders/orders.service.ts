@@ -92,6 +92,22 @@ export class OrdersService {
     return this.model.findByIdAndDelete(id).exec();
   }
 
+  async close(id: string, lastUpdatedBy: UserDto): Promise<OrderDocument> {
+    const order = await this.model.findById(id).exec();
+
+    order.status = OrderStatus.Closed;
+    order.items.forEach(i => {
+      i.startedAt = !!i.startedAt ? i.startedAt : new Date();
+      i.finishedAt = !!i.finishedAt ? i.finishedAt : new Date();
+      i.status = OrderItemStatus.Closed
+    });
+    
+    return this.model.findByIdAndUpdate(
+      id,
+      order
+    ).exec();
+  }
+
   async changeStatus(id: string, statusDto: OrderStatusDto, lastUpdatedBy: UserDto): Promise<OrderDocument> {
     const { itemOrderId, status } = statusDto;
     const order = await this.model.findById(id).exec();
@@ -105,6 +121,7 @@ export class OrdersService {
         order.technicalUser = !!order.technicalUser ? order.technicalUser : lastUpdatedBy._id as unknown as User;
         break;
       case OrderItemStatus.Closed:
+      case OrderItemStatus.Approve:
         itemOrder.finishedAt = !!itemOrder.finishedAt ? itemOrder.finishedAt : new Date();
         break;
     }
@@ -184,7 +201,7 @@ export class OrdersService {
   }
 
   async removeItem(id: string, item: OrderItemDto, lastUpdatedBy: User): Promise<OrderDocument> {
-    console.info(id, item._id)
+
     await this.model.findByIdAndUpdate(
       id,
       { 
@@ -199,7 +216,9 @@ export class OrdersService {
   private async updateOrderStatus(id: string, lastUpdatedBy: UserDto) {
     const order = await this.model.findById(id).exec();
     order.status = order.items?.length == 0 ? OrderStatus.Empty :
-      order.items?.some( i => i.status !== OrderItemStatus.Closed) ? OrderStatus.Open : OrderStatus.Closed;
+      order.items?.some( i => i.status === OrderItemStatus.Approve) ? OrderStatus.Pending :
+      order.items?.some( i => i.status === OrderItemStatus.Wip) ? OrderStatus.Wip :
+      order.items?.some( i => i.status === OrderItemStatus.Open) ? OrderStatus.Open : OrderStatus.Closed;
     
     return this.model.findByIdAndUpdate(id, {
       ...order,

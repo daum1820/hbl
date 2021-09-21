@@ -110,7 +110,6 @@ export class OrdersController {
     return this.readOne(id);
   }
 
-  @Roles(Role.Admin, Role.Moderator)
   @Put(':id/item')
   async updateItem(@Param('id') id: string, @Body() orderItem: OrderItemDto, @Req() req): Promise<OrderDto> {
 
@@ -166,6 +165,23 @@ export class OrdersController {
 
     this.logger.log(`< delete - result: ${JSON.stringify(result)}`);
     return new OrderDto(result);
+    
+  }
+
+  @Roles(Role.Admin, Role.Moderator)
+  @Put(':id/close')
+  async close(@Param('id') id: string, @Req() req): Promise<OrderDto> {
+    this.logger.log(`> close - ${id}`);
+    const result = await this.ordersService.close(id, req.user);
+
+    if (!result) {
+      const message = `Order's status with id '${id}' could not be updated.`;
+      this.logger.error(message);
+      throw new InternalServerErrorException(message);
+    }
+
+    this.logger.log(`< close - result: ${JSON.stringify(result)}`);
+    return this.readOne(id);
     
   }
 

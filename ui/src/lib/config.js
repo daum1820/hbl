@@ -4,8 +4,6 @@ import { baseURL } from 'utils';
 import { hasToken, bearerToken, clearToken, refreshToken } from 'lib/token'
 import store from 'lib/store';
 import { sagaActions } from 'sagas';
-import { startLoading } from 'features/common.feature';
-import { stopLoading } from 'features/common.feature';
 import { setToken } from './token';
 
 // Set config defaults when creating the instance
@@ -15,12 +13,13 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.response.use(
   response => {
-    store.dispatch(stopLoading());
+    store.dispatch({ type: sagaActions.STOP_LOADING });
+    
     return response;
   },
   async(error) => {
-    store.dispatch(stopLoading())
-    
+    store.dispatch({ type: sagaActions.STOP_LOADING });
+
     if (hasToken()) {
       const request = error.config;
       
@@ -49,7 +48,11 @@ axiosInstance.interceptors.response.use(
 );
 
 axiosInstance.interceptors.request.use((config) => {
-  store.dispatch(startLoading());
+  const isLoading = store.getState().common.loading;
+  
+  if(!isLoading) {
+    store.dispatch({ type: sagaActions.START_LOADING });
+  }
   
   if (hasToken()) {
       config.headers.Authorization = bearerToken();

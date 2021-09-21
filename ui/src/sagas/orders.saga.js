@@ -81,6 +81,17 @@ export function* orderStatus({ payload }) {
   }
 }
 
+export function* closeOrder({ payload }) {
+  try {
+    const { id, message } = payload;
+    const response =  yield call(API.put, { url: `/orders/${id}/close` });
+    yield pushSuccess('closeOrder', { message });
+    yield put(fetch(response.data));
+  } catch (err) {
+    yield pushError('closeOrder', err);
+  }
+}
+
 export function* createItem({ payload }) {
   try {
     const { id, ...data } = payload;
@@ -129,4 +140,5 @@ export default function* watchOrdersSaga() {
   yield takeLatest(sagaActions.ORDER_ADD_ITEM, createItem)
   yield takeLatest(sagaActions.ORDER_REMOVE_ITEM, deleteItem)
   yield takeLatest(sagaActions.ORDER_UPDATE_ITEM, updateItem)
+  yield takeLatest(sagaActions.ORDER_CLOSE, closeOrder)
 }

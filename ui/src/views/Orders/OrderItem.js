@@ -15,11 +15,12 @@ import Button from 'components/CustomButtons/Button';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import CardFooter from 'components/Card/CardFooter';
 import NumberComponent from 'components/Common/NumberComponent';
 import { formatInt } from 'utils';
 import { KeyboardDateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { OrderStatus } from './OrderStatus';
+import CardFooter from 'components/Card/CardFooter';
+import { DisplayWhen } from 'utils/auth.utils';
 
 const useStyles = makeStyles(ordersStyle);
 
@@ -29,7 +30,7 @@ export function OrderItem(props) {
   const classes = useStyles();
   const { t } = useTranslation();
 
-  const [isClosed, setIsClosed] = React.useState(itemOrder?.status === 'closed');
+  const [isClosed, setIsClosed] = React.useState(itemOrder?.status === 'closed' || itemOrder?.status === 'approve');
   const [startedAt, setStartedAt] = React.useState(itemOrder?.startedAt || new Date());
 
   const orderFormSchema = yup.object().shape({
@@ -44,35 +45,33 @@ export function OrderItem(props) {
       then: yup.date().required('error.field.required').nullable().typeError('error.field.required'),
       otherwise: yup.date().nullable()
     }),
-    currentPB: yup.string().nullable(),
-    currentColor: yup.string().nullable(),
-    points: yup.string().nullable(),
-    actions: yup.string().nullable(),
-    notes: yup.string().nullable(),
-    nos: yup.string().nullable()
+    currentPB: yup.string().required('error.field.required').nullable(),
+    currentColor: yup.string().required('error.field.required').nullable(),
+    points: yup.string().required('error.field.required').nullable(),
+    actions: yup.string().required('error.field.required').nullable(),
+    notes: yup.string().required('error.field.required').nullable(),
+    nos: yup.string().required('error.field.required').nullable()
   });
 
-  const { register, control, handleSubmit, formState: { errors, isDirty }, reset } = useForm({
+  const { register, control, handleSubmit, formState, formState: { errors, isDirty, isValid }, reset } = useForm({
     resolver: yupResolver(orderFormSchema),
     defaultValues: {
       ...itemOrder,
     }
   });
 
-
   React.useEffect(() => {
     reset({...itemOrder });
-    setIsClosed(itemOrder?.status === 'closed');
+    setIsClosed(itemOrder?.status === 'closed' || itemOrder?.status === 'approve');
   }, [itemOrder, reset]);
 
   const onSubmit = async (data) => {
-    console.info(data, errors)
-    let { currentColor, currentPB, status, ...rest} = data;
+    let { currentColor, currentPB, printer, ...rest} = data;
     currentColor = formatInt(currentColor);
     currentPB = formatInt(currentPB);
-    await dispatch({ type: sagaActions.ORDER_UPDATE_ITEM, payload: { id, printer, currentColor, currentPB, ...rest }});
+    await dispatch({ type: sagaActions.ORDER_UPDATE_ITEM, payload: { id, printer: printer._id, currentColor, currentPB, ...rest }});
   }
-  console.info(errors)
+  
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
@@ -95,7 +94,10 @@ export function OrderItem(props) {
                         name="currentPB"
                         value={value}
                         disabled={isClosed}
+                        required
                         onChange={e => onChange(e.target.value)}
+                        error={ formState.isSubmitted && (!!errors.currentPB) }
+                        helperText={t(errors.currentPB?.message)}
                         InputLabelProps={{ shrink: true }}
                         InputProps={{
                           inputComponent: NumberComponent,
@@ -119,6 +121,9 @@ export function OrderItem(props) {
                         name="currentColor"
                         value={value}
                         disabled={isClosed}
+                        required
+                        error={ formState.isSubmitted && (!!errors.currentColor) }
+                        helperText={t(errors.currentColor?.message)}
                         onChange={e => onChange(e.target.value)}
                         InputLabelProps={{ shrink: true }}
                         InputProps={{
@@ -142,62 +147,67 @@ export function OrderItem(props) {
                         label={t('label.order.nos')}
                         name="nos"
                         value={value || '' }
+                        required
+                        error={ formState.isSubmitted && (!!errors.nos) }
+                        helperText={t(errors.nos?.message)}
                         disabled={isClosed}
                         onChange={e => onChange(e.target.value)}
                       />
                     )}
                   />
                 </GridItem>
-                <GridItem xs={12} sm={12} md={3}>
-                  <MuiPickersUtilsProvider libInstance={moment} utils={MomentUtils} locale="pt-br">
-                    <Controller
-                      control={control}
-                      name="startedAt"
-                      inputRef={register()}
-                      render={({ field: { onChange, value } }) => (
-                        <KeyboardDateTimePicker
-                          disableFuture
-                          invalidDateMessage={t('error.field.invalid.format')}
-                          variant="inline"
-                          format={t('format.dateTime')}
-                          margin="normal"
-                          id="startedAt"
-                          label={t('label.order.startedAt')}
-                          value={value ? moment(value) : null}
-                          onChange={date => { onChange(date); setStartedAt(date)}}
-                          fullWidth
-                          disabled={isClosed}
-                        />
-                      )}
-                    />
-                  </MuiPickersUtilsProvider>
-                </GridItem>
-                <GridItem xs={12} sm={12} md={3}>
-                  <MuiPickersUtilsProvider libInstance={moment} utils={MomentUtils} locale="pt-br">
-                    <Controller
-                      control={control}
-                      name="finishedAt"
-                      inputRef={register()}
-                      render={({ field: { onChange, value } }) => (
-                        <KeyboardDateTimePicker
-                          disableFuture
-                          invalidDateMessage={t('error.field.invalid.format')}
-                          variant="inline"
-                          format={t('format.dateTime')}
-                          margin="normal"
-                          id="finishedAt"
-                          label={t('label.order.finishedAt')}
-                          value={value ? moment(value) : null}
-                          onChange={date => onChange(date)}
-                          minDate={startedAt || new Date()}
-                          minDateMessage={t('error.field.minDate')}
-                          fullWidth
-                          disabled={isClosed}
-                        />
-                      )}
-                    />
-                  </MuiPickersUtilsProvider>
-                </GridItem>
+                <DisplayWhen roles={['Admin', 'Moderator']}>
+                  <GridItem xs={12} sm={12} md={3}>
+                    <MuiPickersUtilsProvider libInstance={moment} utils={MomentUtils} locale="pt-br">
+                      <Controller
+                        control={control}
+                        name="startedAt"
+                        inputRef={register()}
+                        render={({ field: { onChange, value } }) => (
+                          <KeyboardDateTimePicker
+                            disableFuture
+                            invalidDateMessage={t('error.field.invalid.format')}
+                            variant="inline"
+                            format={t('format.dateTime')}
+                            margin="normal"
+                            id="startedAt"
+                            label={t('label.order.startedAt')}
+                            value={value ? moment(value) : null}
+                            onChange={date => { onChange(date); setStartedAt(date)}}
+                            fullWidth
+                            disabled={isClosed}
+                          />
+                        )}
+                      />
+                    </MuiPickersUtilsProvider>
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={3}>
+                    <MuiPickersUtilsProvider libInstance={moment} utils={MomentUtils} locale="pt-br">
+                      <Controller
+                        control={control}
+                        name="finishedAt"
+                        inputRef={register()}
+                        render={({ field: { onChange, value } }) => (
+                          <KeyboardDateTimePicker
+                            disableFuture
+                            invalidDateMessage={t('error.field.invalid.format')}
+                            variant="inline"
+                            format={t('format.dateTime')}
+                            margin="normal"
+                            id="finishedAt"
+                            label={t('label.order.finishedAt')}
+                            value={value ? moment(value) : null}
+                            onChange={date => onChange(date)}
+                            minDate={startedAt || new Date()}
+                            minDateMessage={t('error.field.minDate')}
+                            fullWidth
+                            disabled={isClosed}
+                          />
+                        )}
+                      />
+                    </MuiPickersUtilsProvider>
+                  </GridItem>
+                </DisplayWhen>
               </GridContainer>
               <GridContainer >
                 <GridItem xs={12} sm={12}  md={6}>
@@ -215,6 +225,9 @@ export function OrderItem(props) {
                         name="actions"
                         value={value || '' }
                         disabled={isClosed}
+                        required
+                        error={ formState.isSubmitted && (!!errors.actions) }
+                        helperText={t(errors.actions?.message)}
                         onChange={e => onChange(e.target.value)}
                       />
                     )}
@@ -235,6 +248,9 @@ export function OrderItem(props) {
                         name="points"
                         value={value || '' }
                         disabled={isClosed}
+                        required
+                        error={ formState.isSubmitted && (!!errors.points) }
+                        helperText={t(errors.points?.message)}
                         onChange={e => onChange(e.target.value)}
                       />
                     )}
@@ -259,6 +275,9 @@ export function OrderItem(props) {
                         name="notes"
                         value={value || '' }
                         disabled={isClosed}
+                        required
+                        error={ formState.isSubmitted && (!!errors.notes) }
+                        helperText={t(errors.notes?.message)}
                         onChange={e => onChange(e.target.value)}
                       />
                     )}
@@ -267,16 +286,14 @@ export function OrderItem(props) {
               </GridContainer>
             </CardBody>
             <CardFooter>
-                <Button
-                  type='submit'
-                  disabled={isClosed}
-                  color={color}>
-                  {t('button.save.equip')}
-                </Button>
-                <GridContainer justifyContent='flex-end'>
-                  { !!printer ? <OrderStatus color={color} id={id} itemOrderId={itemOrder._id} status={itemOrder?.status} isDirty={isDirty} /> : null}
-                </GridContainer>
-              </CardFooter>
+              <Button
+                type='submit'
+                disabled={isClosed}
+                color={color}>
+                {t('button.save.equip')}
+              </Button>
+              { !!printer ? <OrderStatus color={color} id={id} itemOrderId={itemOrder._id} status={itemOrder?.status} isDirty={isDirty} isValid={isValid}/> : null}
+            </CardFooter>
           </Card>            
         </form>
       </GridItem>

@@ -36,6 +36,8 @@ export enum DueDate {
 export enum OrderStatus {
   Empty = 'empty',
   Open = 'open',
+  Pending = 'pending',
+  Wip = 'wip',
   Closed = 'closed',
 }
 
@@ -43,4 +45,5 @@ export enum OrderItemStatus {
   Open = 'open',
   Closed = 'closed',
   Wip = 'wip',
+  Approve = 'approve',
 }

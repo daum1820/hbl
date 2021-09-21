@@ -4,10 +4,12 @@ import { primaryColor } from "assets/jss/material-dashboard-react";
 import { dangerColor, whiteColor, warningColor } from "assets/jss/material-dashboard-react";
 import dashboardStyle from 'assets/jss/material-dashboard-react/views/dashboardStyle.js';
 
-const styles = {
+const styles =  (theme) => ({
   ...dashboardStyle,
   selected:{},
   warning: {
+    color: warningColor[0],
+    marginTop: '10px',
     '&$selected' :{
       color: whiteColor,
       backgroundColor: warningColor[0],
@@ -19,15 +21,20 @@ const styles = {
   spin: {
     animation: '$circular-rotate 1.4s linear infinite',
   },
-  statusHeader: {
-    marginTop: '15px'
-  },
   statusHeaderTitle: {
-    display: 'flex'
+    display: 'flex',
+    [theme.breakpoints.down("xs")]: {
+      position: 'absolute',
+      right: '-8px'
+    },
+    [theme.breakpoints.down("sm")]: {
+      position: 'absolute',
+      right: '-8px'
+    }
   },
   statusButton: {
     paddingLeft: '0.5rem !important'
-  }, 
+  },
   danger: {
     color: dangerColor[0],
     marginTop: '10px'
@@ -99,5 +106,5 @@ const styles = {
       transform: 'rotate(360deg)',
     },
   },
-};
+});
 export default styles;

@@ -1,4 +1,4 @@
-import { put, takeLatest, call, takeEvery } from 'redux-saga/effects';
+import { put, call, takeEvery , takeLeading} from 'redux-saga/effects';
 import API from 'lib/config';
 import { sagaActions }from './actions.saga';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
@@ -56,11 +56,11 @@ export function* fetchTypes({ payload }) {
 }
 
 export function* watchNotificationSaga() {
-  yield takeLatest(sagaActions.CLEAR_NOTIFICATION, clearNotification)
-  yield takeLatest(sagaActions.CLEAR_ALL_NOTIFICATIONS, clearAllNotifications)
-  yield takeLatest(sagaActions.PUSH_INFO_NOTIFICATION, pushInfoNotification)
-  yield takeLatest(sagaActions.PUSH_SUCCESS_NOTIFICATION, pushSuccessNotification)
-  yield takeLatest(sagaActions.PUSH_ERROR_NOTIFICATION, pushErrorNotification)
+  yield takeLeading(sagaActions.CLEAR_NOTIFICATION, clearNotification)
+  yield takeLeading(sagaActions.CLEAR_ALL_NOTIFICATIONS, clearAllNotifications)
+  yield takeLeading(sagaActions.PUSH_INFO_NOTIFICATION, pushInfoNotification)
+  yield takeLeading(sagaActions.PUSH_SUCCESS_NOTIFICATION, pushSuccessNotification)
+  yield takeLeading(sagaActions.PUSH_ERROR_NOTIFICATION, pushErrorNotification)
 }
 
 export function* watchTypeSaga() {

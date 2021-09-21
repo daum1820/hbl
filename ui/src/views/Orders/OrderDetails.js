@@ -31,8 +31,9 @@ import Success from 'components/Typography/Success';
 import Danger from 'components/Typography/Danger';
 import { DisplayWhen } from 'utils/auth.utils';
 import { hasRole } from 'utils/auth.utils';
-import Warning from 'components/Typography/Warning';
 import Muted from 'components/Typography/Muted';
+import Warning from 'components/Typography/Warning';
+import Primary from 'components/Typography/Primary';
 
 const useStyles = makeStyles(ordersStyle);
 
@@ -53,7 +54,7 @@ export function OrderDetails({color = 'warning'}) {
     technicalUser: yup.object().required('error.field.required').nullable().typeError('error.field.required'),
   });
 
-  const { register, control, handleSubmit, formState, formState: { errors }, reset } = useForm({
+  const { register, control, handleSubmit, formState, formState: { errors, isDirty, isValid }, reset } = useForm({
     resolver: yupResolver(orderFormSchema),
     defaultValues: {
       ...order,
@@ -81,37 +82,59 @@ export function OrderDetails({color = 'warning'}) {
   const printers = order?.customer?.printers.filter(p => hasRole(['Admin', 'Moderator']) ? true : Object.values(order?.items)?.some(i => i.printer._id === p._id)).map((printer, key) => (
     <OrderPrinter 
       printer={printer}
-      color={color}
       orderId={id} 
       key={key}
-      itemOrder={Object.values(order?.items)?.find(i => i.printer._id === printer._id)}/>
+      itemOrder={Object.values(order?.items)?.find(i => i.printer?._id === printer?._id)}/>
   ))
 
   const actualContextList = {
     closed: {
       icon: 'published_with_changes',
       label: 'label.order.status.closed',
+      actionLabel: 'label.action.order.close',
       color: 'success',
-      component: Success
+      component: Success,
+      spin: false
     },
     open: {
-      icon: 'sync',
+      icon: 'replay',
       label: 'label.order.status.open',
       color: 'danger',
       component: Danger,
+      spin: false
+    },
+    wip: {
+      icon: 'sync',
+      label: 'label.order.status.wip',
+      color: 'primary',
+      component: Primary,
+      spin: true
     },
     empty: {
       icon: 'sync_problem',
       label: 'label.order.status.empty',
       color: 'muted',
-      component: Muted
+      component: Muted,
+      spin: false
+    },
+    pending: {
+      icon: 'fingerprint',
+      label: 'label.order.status.pending',
+      color: 'warning',
+      component: Warning,
+      spin: false
     }
   }
 
   const actualContext = actualContextList[order?.status || 'open'];
+  const closeContext = actualContextList['closed'];
 
   const [hasItems, setHasItems] = React.useState(Object.keys(order?.items || {}).length > 0)
   
+  const closeOrder = async () => {
+    await dispatch({ type: sagaActions.ORDER_CLOSE, payload: { id, message: 'message.order.status.success' } });
+  };
+
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
@@ -124,7 +147,7 @@ export function OrderDetails({color = 'warning'}) {
               <GridContainer justifyContent='space-between'>
                 <h2 className={classes.cardTitle}>{t('label.order.details' )}</h2>
                 <div className={classes.statusHeaderTitle}>
-                  <Icon className={classNames({ [classes[actualContext.color]]: actualContext.color })}>
+                  <Icon className={classNames({ [classes.spin]: actualContext.spin, [classes[actualContext.color]]: actualContext.color })}>
                     {actualContext.icon}
                   </Icon>
                   <div style={{ marginTop: '15px' }}>
@@ -272,15 +295,25 @@ export function OrderDetails({color = 'warning'}) {
                   {t('button.save.order')}
                 </Button>
               </DisplayWhen>
-              <Tooltip placement='left' title={hasItems ? t('export.pdf.order') : t('error.printer.itemOrder') }>
-                <div>
-                  <a href={`${baseURL}orders/${id}/export`} target="_blank" rel="noreferrer" style={{ pointerEvents: hasItems ? 'auto' : 'none'}}>
-                    <IconButton type='button' disabled={!hasItems}>
+              <GridContainer justifyContent='flex-end'>
+                <DisplayWhen roles={['Admin', 'Moderator']} check={() => order?.status !== 'closed'}>
+                  <Tooltip placement='left' title={isDirty ? t('error.save.order.first') : !isValid ? t('error.save.order.required') : t(closeContext.actionLabel)}>
+                    <div style={{ margin : '10px 0px'}}>
+                      <Button justIcon round size='sm' color={closeContext.color} className={classes.statusButton} onClick={closeOrder}
+                        disabled={isDirty || !isValid}>
+                        <Icon style={{ marginRight: '5px' }} >{closeContext.icon}</Icon>
+                      </Button>
+                    </div>
+                  </Tooltip>
+                </DisplayWhen>
+                <Tooltip placement='left' title={hasItems ? t('export.pdf.order') : t('error.printer.itemOrder') }>
+                  <div style={{ margin : '5px 15px 5px 5px'}}>
+                    <IconButton type='button' disabled={!hasItems} href={`${baseURL}orders/${id}/export`} target='_blank'>
                       <Icon>picture_as_pdf</Icon>
                     </IconButton>
-                  </a>
-                </div>
-              </Tooltip>
+                  </div>
+                </Tooltip>
+              </GridContainer>
             </CardFooter>
           </Card>            
         </form>

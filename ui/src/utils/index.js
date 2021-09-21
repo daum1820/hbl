@@ -37,9 +37,9 @@ export function formatHour(date) {
 }
 
 export function formatPrice(value = '') {
-  return parseFloat(`${value}`.replace('R$ ', '').replace('R$ ', '').replace('.', '').replace(',', '.'))
+  return parseFloat(`${value}`.replaceAll('R$ ', '').replaceAll('R$ ', '').replaceAll('.', '').replaceAll(',', '.'))
 }
 
 export function formatInt(value = '') {
-  return parseInt(`${value}`.replace('.', ''))
+  return parseInt(`${value}`.replaceAll('.', ''))
 }

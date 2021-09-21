@@ -23,15 +23,13 @@ export const invoiceMachine = (initialState) => createMachine({
   },
   states: {
     closed: {
-      on: { TOGGLE: { target: 'open' } },
-      exit: ['notifyOpen'],
+      on: { TOGGLE: { target: 'open', actions: ['notifyOpen'] } },
       meta: {
         context: 'open',
       }
     },
     open: {
-      on: { TOGGLE: { target: 'closed' } },
-      exit: ['notifyClosed'],
+      on: { TOGGLE: { target: 'closed', actions: ['notifyClosed'] } },
       meta: {
         context: 'closed',
       }

@@ -21,15 +21,13 @@ export const orderItemMachine = (initialState) => createMachine({
   },
   states: {
     remove: {
-      on: { TOGGLE: { target: 'add' } },
-      exit: ['notifyAdd'],
+      on: { TOGGLE: { target: 'add', actions: ['notifyAdd'] } },
       meta: {
         context: 'add',
       }
     },
     add: {
-      on: { TOGGLE: { target: 'remove' } },
-      exit: ['notifyRemove'],
+      on: { TOGGLE: { target: 'remove', actions: ['notifyRemove'] } },
       meta: {
         context: 'remove',
       }

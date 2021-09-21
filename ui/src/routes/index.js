@@ -28,8 +28,8 @@ import { getOrderListSelector } from 'features/orders.feature';
 import Primary from 'components/Typography/Primary';
 import { OrderDetails } from 'views/Orders/OrderDetails';
 import { formatFullDate } from 'utils';
-import Warning from 'components/Typography/Warning';
 import Muted from 'components/Typography/Muted';
+import Warning from 'components/Typography/Warning';
 
 const appRoutes = [
   {
@@ -173,7 +173,7 @@ const appRoutes = [
       (item) => !!item.technicalUser ? `${item.technicalUser?.name} ${item.technicalUser?.lastName }` : null,
       (item) => {
         const label = `label.order.status.${item.status.toLowerCase()}`;
-        const Component = item.status === 'open' ? Danger : item.status === 'empty' ? Muted : Success;
+        const Component = item.status === 'wip' ? Primary : item.status === 'open' ? Danger : item.status === 'pending' ? Warning : item.status === 'empty' ? Muted : Success;
         return (<Component><Trans i18nKey={label}/></Component>)
       }],
     listSelector: getOrderListSelector,

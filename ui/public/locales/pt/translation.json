@@ -74,7 +74,8 @@
         "remove": "Remover equipamento da OS",
         "open": "Re-abrir OS",
         "wip": "Iniciar atendimento",
-        "close": "Finalizar atendimento"
+        "close": "Finalizar atendimento",
+        "approve": "Enviar para aprovação do cliente"
       }
     }, 
     "name": "Nome",
@@ -133,7 +134,8 @@
         "empty": "Sem equipamentos",
         "open": "Em aberto",
         "wip": "Em atendimento",
-        "closed": "Finalizada"
+        "closed": "Finalizada",
+        "pending": "Aprovação pendente"
       }
     },
     "invoice": {
@@ -303,7 +305,8 @@
   "error": {
     "save": {
       "invoice.first" : "Salve a fatura antes de prosseguir",
-      "order.first" : "Salve a OS antes de prosseguir"
+      "order.first" : "Salve a OS antes de prosseguir",
+      "order.required" : "Preencha o Item da OS antes de prosseguir"
     },
     "model" : {
       "type.exists": "Este código já existe para este tipo de produto",

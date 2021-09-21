@@ -23,15 +23,13 @@ export const statusMachine = (initialState) => createMachine({
   },
   states: {
     inactive: {
-      on: { TOGGLE: { target: 'active' } },
-      entry: ['notifyInactive'],
+      on: { TOGGLE: { target: 'active', actions: ['notifyActive'] } },
       meta: {
         context: 'active',
       }
     },
     active: {
-      on: { TOGGLE: { target: 'inactive' } },
-      entry: ['notifyActive'],
+      on: { TOGGLE: { target: 'inactive', actions: ['notifyInactive'] } },
       meta: {
         context: 'inactive',
       }

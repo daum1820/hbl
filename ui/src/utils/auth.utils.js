@@ -4,12 +4,12 @@ import { isEmpty } from 'lodash';
 import { readFromToken } from "lib/token";
 
 export function DisplayWhen(props) {
-  const {children, roles =[] } = props;
+  const {children, roles = [], check = () => true } = props;
   const role = useSelector((state) => state.auth.authUser.role);
 
   const [hasRole] = React.useState(isEmpty(roles) || roles.includes(role))
 
-  return hasRole ? children  : '';
+  return hasRole && check() ? children  : '';
 
 }
 

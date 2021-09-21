@@ -17,6 +17,7 @@ export default function Common() {
   return (
     <div>
       { isLoading ? (<LinearProgress />) : '' }
+      { isLoading ? (<div style={{ position: 'absolute', width: '100vw', height: '100vh' , top: '0', left: '0', zIndex: '1000'}}></div>) : '' }
       { Object.entries(notifications).map(([id, n], key) => {
           return (
             <Snackbar
