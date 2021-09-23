@@ -30,6 +30,8 @@ import { InvoiceItem } from './InvoiceItem';
 import CommonList from 'components/Common/CommonList';
 import { getInvoiceItemSelectorFactory } from 'features/invoices.feature';
 import { KeyboardDatePicker, DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import ConfirmDelete from 'components/Common/ConfirmDelete';
+import { DisplayWhen } from 'utils/auth.utils';
 
 const useStyles = makeStyles(invoicesStyle);
 
@@ -376,12 +378,17 @@ export function InvoicesDetails({color = 'danger'}) {
               </GridContainer>
             </CardBody>
             <CardFooter>
-                <Button
-                  type='submit'
-                  disabled={isClosed}
-                  color={color}>
-                  {t('button.save.invoice')}
-                </Button>
+                <DisplayWhen roles={['Admin']}>
+                  <GridItem container justifyContent='flex-start'>
+                    <Button
+                      round
+                      type='submit'
+                      color={color}>
+                      {t('button.save.invoice')}
+                    </Button>
+                    <ConfirmDelete id={id} color={color} context='invoices' removeAction={sagaActions.DELETE_INVOICE}/>
+                  </GridItem>
+                </DisplayWhen>
                 <Tooltip placement='left' title={t('export.pdf.invoice')}>
                   <a href={`${baseURL}invoices/${id}/export`} target="_blank" rel="noreferrer">
                     <IconButton type='button'>

@@ -30,6 +30,8 @@ import { UserPassword } from './UserPassword';
 import styles from './userStyle';
 import { PhoneElement } from 'components/MaskedElement/PhoneElement';
 import { ZipcodeElement } from 'components/MaskedElement/ZipcodeElement';
+import ConfirmDelete from 'components/Common/ConfirmDelete';
+import { DisplayWhen } from 'utils/auth.utils';
 
 const useStyles = makeStyles(styles);
 
@@ -382,7 +384,19 @@ export default function UserDetails({color = 'primary'}) {
                 </GridContainer>
               </CardBody>
               <CardFooter>
+                <DisplayWhen roles={['Admin']}>
+                  <GridItem container justifyContent='flex-start'>
+                    <Button
+                      round
+                      type='submit'
+                      color={color}>
+                      {t(id || !editMode ? 'button.save.user' : 'button.save.profile')}
+                    </Button>
+                    <ConfirmDelete id={id} color={color} context='users' removeAction={sagaActions.DELETE_USER}/>
+                  </GridItem>
+                </DisplayWhen>
                 <Button
+                  round
                   type='submit'
                   color={color}>
                   {t(id || !editMode ? 'button.save.user' : 'button.save.profile')}

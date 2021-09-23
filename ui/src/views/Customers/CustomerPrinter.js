@@ -107,6 +107,7 @@ export function CustomerPrinter({ id, color }) {
             </CardBody>  
             <CardFooter>
                 <Button
+                  round
                   type='submit'
                   color={color}>
                   {t('button.add.printer')}

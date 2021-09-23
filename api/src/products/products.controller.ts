@@ -86,7 +86,7 @@ export class ProductsController  {
 
     this.logger.log(`< create - result: ${JSON.stringify(createdProduct)}`);
 
-    return new ProductDto(createdProduct);
+    return this.readOne(createdProduct._id);
   }
 
   @Roles(Role.Admin)
@@ -110,7 +110,7 @@ export class ProductsController  {
     const updatedProduct: ProductDocument = await this.productsService.update(id, toUpdateDto);
 
     this.logger.log(`< update - result: ${JSON.stringify(updatedProduct)}`);
-    return new ProductDto(updatedProduct);
+    return this.readOne(id);
   }
 
   @Roles(Role.Admin)

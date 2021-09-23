@@ -215,7 +215,7 @@ export class OrdersService {
 
   private async updateOrderStatus(id: string, lastUpdatedBy: UserDto) {
     const order = await this.model.findById(id).exec();
-    order.status = order.items?.length == 0 ? OrderStatus.Empty :
+    order.status = order.items?.length == 0 && order.status !== OrderStatus.Closed ? OrderStatus.Empty :
       order.items?.some( i => i.status === OrderItemStatus.Approve) ? OrderStatus.Pending :
       order.items?.some( i => i.status === OrderItemStatus.Wip) ? OrderStatus.Wip :
       order.items?.some( i => i.status === OrderItemStatus.Open) ? OrderStatus.Open : OrderStatus.Closed;

@@ -34,6 +34,7 @@ import { hasRole } from 'utils/auth.utils';
 import Muted from 'components/Typography/Muted';
 import Warning from 'components/Typography/Warning';
 import Primary from 'components/Typography/Primary';
+import ConfirmDelete from 'components/Common/ConfirmDelete';
 
 const useStyles = makeStyles(ordersStyle);
 
@@ -289,13 +290,17 @@ export function OrderDetails({color = 'warning'}) {
             </CardBody>
             <CardFooter>
               <DisplayWhen roles={['Admin', 'Moderator']}>
-                <Button
-                  type='submit'
-                  color={color}>
-                  {t('button.save.order')}
-                </Button>
+                <GridItem container justifyContent='flex-start'>
+                  <Button
+                    round
+                    type='submit'
+                    color={color}>
+                    {t('button.save.order')}
+                  </Button>
+                  <ConfirmDelete id={id} color={color} context='orders' removeAction={sagaActions.DELETE_ORDER}/>
+                </GridItem>
               </DisplayWhen>
-              <GridContainer justifyContent='flex-end'>
+              <GridItem container justifyContent='flex-end'>
                 <DisplayWhen roles={['Admin', 'Moderator']} check={() => order?.status !== 'closed'}>
                   <Tooltip placement='left' title={isDirty ? t('error.save.order.first') : !isValid ? t('error.save.order.required') : t(closeContext.actionLabel)}>
                     <div style={{ margin : '10px 0px'}}>
@@ -313,7 +318,7 @@ export function OrderDetails({color = 'warning'}) {
                     </IconButton>
                   </div>
                 </Tooltip>
-              </GridContainer>
+              </GridItem>
             </CardFooter>
           </Card>            
         </form>

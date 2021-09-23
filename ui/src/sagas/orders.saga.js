@@ -108,7 +108,6 @@ export function* updateItem({ payload }) {
   try {
     const { id, ...data } = payload;
     const { data:order } = yield call(API.put, { url: `/orders/${id}/item`, data });
-    yield pushSuccess('updateItem', { message: 'message.order.item.add.success'});
     yield put(fetch(order));
   } catch (err) {
     yield put(error(err?.response?.data));

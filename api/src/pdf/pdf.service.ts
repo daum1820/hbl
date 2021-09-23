@@ -4,7 +4,7 @@ import PDFDocument from 'pdfkit';
 import { Injectable, Logger } from '@nestjs/common';
 import { Invoice, InvoiceItem } from '../invoices/invoices.schema';
 import { Customer } from '../customers/customers.schema';
-import { formatCurrency, formatDate, formatHour, formatReportNr, formatRegistration, hr, formatFullDate, vr } from './pdf.utils';
+import { formatCurrency, formatInt , formatDate, formatHour, hr, formatFullDate, vr } from './pdf.utils';
 import { createWriteStream } from 'fs';
 import { Order, OrderItem } from '../orders/orders.schema';
 import { SettingsService } from '../settings/settings.service';
@@ -17,7 +17,7 @@ export class PdfService {
   }
 
   async exportInvoice(invoice: Invoice): Promise<PDFDocument> {
-    const filepath = path.join(__dirname, `Fatura_${formatReportNr(invoice.invoiceNumber)}.pdf`);
+    const filepath = path.join(__dirname, `Fatura_${invoice.invoiceNumber}.pdf`);
 
     let doc: PDFDocument = new PDFDocument({ margin: 50 });
 
@@ -31,12 +31,12 @@ export class PdfService {
     doc.pipe(createWriteStream(filepath));
 
 		
-    this.logger.log(`PDF successfully read for invoice ${formatReportNr(invoice.invoiceNumber)}`)
+    this.logger.log(`PDF successfully read for invoice ${invoice.invoiceNumber}`)
 		return doc;
 	}
 
   async exportOrder(order: Order): Promise<PDFDocument> {
-    const filepath = path.join(__dirname, `OS_${formatReportNr(order.orderNumber)}.pdf`);
+    const filepath = path.join(__dirname, `OS_${order.orderNumber}.pdf`);
 
     let doc: PDFDocument = new PDFDocument({ margin: 50 });
 
@@ -57,7 +57,7 @@ export class PdfService {
     doc.end();
     doc.pipe(createWriteStream(filepath));
 		
-    this.logger.log(`PDF successfully read for order ${formatReportNr(order.orderNumber)}`)
+    this.logger.log(`PDF successfully read for order ${order.orderNumber}`)
 		return doc;
 	}
 
@@ -96,7 +96,7 @@ export class PdfService {
       .fontSize(10)
       .text('Número da Fatura:', 50, custormerInfoPosition)
       .font('Helvetica-Bold')
-      .text(formatReportNr(invoice.invoiceNumber), 150, custormerInfoPosition)
+      .text(invoice.invoiceNumber, 150, custormerInfoPosition)
       .font('Helvetica')
       .text('Emitida em:', 50, custormerInfoPosition + 15)
       .text(formatDate(invoice.createdAt), 150, custormerInfoPosition + 15)
@@ -128,7 +128,7 @@ export class PdfService {
       .fontSize(10)
       .text('Número da OS:', 50, custormerInfoPosition)
       .font('Helvetica-Bold')
-      .text(formatReportNr(order.orderNumber), 150, custormerInfoPosition)
+      .text(order.orderNumber, 150, custormerInfoPosition)
       .font('Helvetica')
       .text('Aberto em:', 50, custormerInfoPosition + 15)
       .text(formatFullDate(order.createdAt), 150, custormerInfoPosition + 15)
@@ -154,7 +154,7 @@ export class PdfService {
     doc
       .fontSize(9)
       .font('Helvetica-Bold')
-      .text(`${customer.fullName || customer.name} ${formatRegistration(customer.registrationNr, customer.customerNumber)}`, 260, custormerInfoPosition)
+      .text(`${customer.fullName || customer.name} (${customer.registrationNr})`, 260, custormerInfoPosition)
       .font('Helvetica')
       .text(customer.contactName, 260, custormerInfoPosition + 15)
       .text(customer.address, 260, custormerInfoPosition + 30)
@@ -285,11 +285,14 @@ export class PdfService {
       .fontSize(10)
       .font('Helvetica')
       .text('P/B Atual:', 55, bodyPosition)
-      .text(`${orderItem.currentPB || ''}`, 118, bodyPosition - 2) 
-      .text('_____________', 115, bodyPosition)
-      .text('Color Atual:', 55, bodyPosition + 30)
-      .text(`${orderItem.currentColor || ''}`, 118, bodyPosition + 30 - 2) 
-      .text('_____________', 115, bodyPosition + 30)
+      .text(`${formatInt(orderItem.currentPB) || ''}`, 125, bodyPosition - 2) 
+      .text('_____________', 120, bodyPosition)
+      .text('Color Atual:', 55, bodyPosition + 20)
+      .text(`${formatInt(orderItem.currentColor) || ''}`, 125, bodyPosition + 20 - 2) 
+      .text('_____________', 120, bodyPosition + 20)
+      .text('Crédito Atual:', 55, bodyPosition + 40)
+      .text(`${formatInt(orderItem.currentCredit) || ''}`, 125, bodyPosition + 40 - 2) 
+      .text('_____________', 120, bodyPosition + 40)
       .text('Atendimento:', 230, bodyPosition);
 
     if (!!orderItem.startedAt) {
@@ -297,7 +300,7 @@ export class PdfService {
       .text(`${formatDate(orderItem.startedAt)}`, 315, bodyPosition - 2) 
       .text('______________', 302, bodyPosition) 
       .text('Início:', 230, bodyPosition + 20)
-      .text(`${formatHour(orderItem.startedAt)}`, 325, bodyPosition +20 - 2) 
+      .text(`${formatHour(orderItem.startedAt)}`, 325, bodyPosition + 20 - 2) 
       .text('_____________', 302, bodyPosition + 20)        
     } else {
       doc

@@ -28,6 +28,10 @@ export class OrderItemDto extends BaseIdDto {
   @IsOptional()
   currentColor: number;
 
+  @IsNumber()
+  @IsOptional()
+  currentCredit: number;
+
   @IsString()
   @IsOptional()
   notes: string;
@@ -60,6 +64,7 @@ export class OrderItemDto extends BaseIdDto {
       this.printer = orderItem.printer;
       this.currentPB = orderItem.currentPB;
       this.currentColor = orderItem.currentColor;
+      this.currentCredit = orderItem.currentCredit;
       this.notes = orderItem.notes;
       this.actions = orderItem.actions;
       this.points = orderItem.points;

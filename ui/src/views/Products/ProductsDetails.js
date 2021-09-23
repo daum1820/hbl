@@ -24,6 +24,8 @@ import { getProductSelector } from 'features/products.feature';
 import CardFooter from 'components/Card/CardFooter';
 import Button from 'components/CustomButtons/Button';
 import { getCategoryTypeSelectorFactory } from 'features/categories.feature';
+import { DisplayWhen } from 'utils/auth.utils';
+import ConfirmDelete from 'components/Common/ConfirmDelete';
 
 const useStyles = makeStyles(styles);
 
@@ -213,12 +215,18 @@ export function ProductsDetails({color = 'success'}) {
               </GridContainer>
             </CardBody>  
             <CardFooter>
-                <Button
-                  type='submit'
-                  color={color}>
-                  {t('button.save.product')}
-                </Button>
-              </CardFooter>
+              <DisplayWhen roles={['Admin']}>
+                <GridItem container justifyContent='flex-start'>
+                  <Button
+                    round
+                    type='submit'
+                    color={color}>
+                    {t('button.save.product')}
+                  </Button>
+                  <ConfirmDelete id={id} color={color} context='products' removeAction={sagaActions.DELETE_PRODUCT}/>
+                </GridItem> 
+              </DisplayWhen>
+            </CardFooter>
           </Card>
         </form>
       </GridItem>

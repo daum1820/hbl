@@ -27,6 +27,8 @@ import { CustomerStatus } from './CustomerStatus';
 import CommonList from 'components/Common/CommonList';
 import { getCustomerPrintersSelectorFactory } from 'features/customers.feature';
 import { CustomerPrinter } from './CustomerPrinter';
+import ConfirmDelete from 'components/Common/ConfirmDelete';
+import { DisplayWhen } from 'utils/auth.utils';
 
 const useStyles = makeStyles(styles);
 
@@ -320,12 +322,18 @@ export function CustomersDetails({color = 'success'}) {
                   </GridContainer>
               </CardBody>  
               <CardFooter>
-                  <Button
-                    type='submit'
-                    color={color}>
-                    {t('button.save.customer')}
-                  </Button>
-                </CardFooter>
+                <DisplayWhen roles={['Admin']}>
+                  <GridItem container justifyContent='flex-start'>
+                    <Button
+                      round
+                      type='submit'
+                      color={color}>
+                      {t('button.save.customer')}
+                    </Button>
+                    <ConfirmDelete id={id} color={color} context='customers' removeAction={sagaActions.DELETE_CUSTOMER}/>
+                  </GridItem>
+                </DisplayWhen>
+              </CardFooter>
             </Card>
           </form>
         </GridItem>

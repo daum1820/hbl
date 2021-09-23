@@ -94,7 +94,7 @@ export class UsersController {
     const newUserDto: UserDocument = await this.usersService.create(userDto);
 
     this.logger.log(`< create - user with ${newUserDto._id} created`);
-    return new UserDto(newUserDto);
+    return this.readOne(newUserDto._id);
   }
 
   @Put(':id')
@@ -118,7 +118,7 @@ export class UsersController {
     const updatedUser: UserDocument = await this.usersService.update(id, toUpdateDto);
 
     this.logger.log(`< update - result: ${JSON.stringify(updatedUser)}`);
-    return new UserDto(updatedUser);
+    return this.readOne(id);
   }
 
   @Put(':id/changeSecurity')
@@ -139,7 +139,7 @@ export class UsersController {
     const updatedUser: UserDocument = await this.usersService.updateSecurity(id, userSecurityDto);
 
     this.logger.log(`< changeSecurity - result: ${JSON.stringify(updatedUser)}`);
-    return new UserDto(updatedUser);
+    return this.readOne(id);
   }
 
   @Roles(Role.Admin)

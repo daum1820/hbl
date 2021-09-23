@@ -78,7 +78,7 @@ export class CustomersController {
 
     this.logger.log(`< create - result: ${JSON.stringify(createdCustomer)}`);
 
-    return new CustomerDto(createdCustomer);
+    return this.readOne(createdCustomer._id);
   }
 
   @Roles(Role.Admin)
@@ -100,7 +100,7 @@ export class CustomersController {
     const updatedCustomer: CustomerDocument = await this.customersService.update(id, toUpdateDto);
 
     this.logger.log(`< update - result: ${JSON.stringify(updatedCustomer)}`);
-    return new CustomerDto(updatedCustomer);
+    return this.readOne(id);
   }
 
   @Put(':id/changeStatus')
@@ -121,7 +121,7 @@ export class CustomersController {
     const updatedCustomer: CustomerDocument = await this.customersService.update(id, changeStatusDto);
 
     this.logger.log(`< changeSecurity - result: ${JSON.stringify(updatedCustomer)}`);
-    return new CustomerDto(updatedCustomer);
+    return this.readOne(id);
   }
 
   @Roles(Role.Admin)
@@ -183,6 +183,6 @@ export class CustomersController {
     const updatedCustomer: CustomerDocument = await this.customersService.removePrinter(id, printer);
 
     this.logger.log(`< removePrinter - result: ${JSON.stringify(updatedCustomer)}`);
-    return new CustomerDto(updatedCustomer);
+    return this.readOne(id);
   }
 }

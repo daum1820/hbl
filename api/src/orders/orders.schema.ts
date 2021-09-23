@@ -26,6 +26,9 @@ export class OrderItem {
   @Prop({ type: Number, required: false, default: 0 })
   currentColor: number;
 
+  @Prop({ type: Number, required: false, default: 0 })
+  currentCredit: number;
+
   @Prop({ required: false })
   notes: string;
 

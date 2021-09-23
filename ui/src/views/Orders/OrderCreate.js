@@ -104,6 +104,7 @@ export default function OrderCreate(props) {
           <GridContainer>
             <GridItem xs={12} sm={12} md={12}>
               <Button
+                round
                 type='submit'
                 color={color}>
                 {t('button.create.order')}

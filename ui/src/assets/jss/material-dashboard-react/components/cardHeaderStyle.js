@@ -70,10 +70,10 @@ const cardHeaderStyle = {
       boxShadow: 'none',
     },
     '& i,& .material-icons': {
-      width: '33px',
-      height: '33px',
+      width: '24px',
+      height: '24px',
       textAlign: 'center',
-      lineHeight: '33px',
+      lineHeight: '24px',
     },
     '& svg:': {
       width: '24px',

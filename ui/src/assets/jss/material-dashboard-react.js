@@ -193,7 +193,7 @@ const roseCardHeader = {
 };
 const grayCardHeader = {
   background:
-    "linear-gradient(60deg, " + grayColor[1] + ", " + grayColor[2] + ")",
+    "linear-gradient(60deg, " + grayColor[3] + ", " + grayColor[4] + ")",
   ...grayBoxShadow,
 };
 

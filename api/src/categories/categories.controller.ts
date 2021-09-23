@@ -75,7 +75,7 @@ export class CategoriesController  {
 
     this.logger.log(`< create - result: ${JSON.stringify(createdCategory)}`);
 
-    return new CategoriesDto(createdCategory);
+    return this.readOne(createdCategory._id);
   }
 
   @Roles(Role.Admin)
@@ -98,7 +98,7 @@ export class CategoriesController  {
     const updatedCategory: CategoriesDocument = await this.categoriesService.update(id, toUpdateDto);
 
     this.logger.log(`< update - result: ${JSON.stringify(updatedCategory)}`);
-    return new CategoriesDto(updatedCategory);
+    return this.readOne(id);
   }
 
   @Roles(Role.Admin)

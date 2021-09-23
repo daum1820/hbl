@@ -120,15 +120,16 @@
       "code": "Número da OS",
       "technicalUser": "Técnico",
       "details": "Detalhes da OS",
-      "pb": "Atual P/B",
-      "color": "Atual Color",
+      "pb": "P/B Atual",
+      "color": "Color Atual",
+      "credit": "Crédito Atual",
       "nos": "N.OS",
       "action": "Ação",
       "notes": "Observaçōes",
       "points": "Pendências",
-      "createdAt": "Aberta em",
-      "startedAt": "Atendimento iniciado em",
-      "finishedAt": "Atendimento finalizado em",
+      "createdAt": "Aberto em",
+      "startedAt": "Início em",
+      "finishedAt": "Término em",
       "status" : {
         "text": "Status da OS",
         "empty": "Sem equipamentos",
@@ -306,11 +307,14 @@
     "save": {
       "invoice.first" : "Salve a fatura antes de prosseguir",
       "order.first" : "Salve a OS antes de prosseguir",
-      "order.required" : "Preencha o Item da OS antes de prosseguir"
+      "order.required" : "Preencha a OS antes de finalizar"
     },
     "model" : {
       "type.exists": "Este código já existe para este tipo de produto",
       "brand.exists": "Este modelo já existe para este fabricante"
+    },
+    "item": {
+      "order" : "Equipamento nāo incluso na OS"
     },
     "field": {
       "required": "Este campo é obrigatório",

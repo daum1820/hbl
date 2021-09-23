@@ -9,18 +9,16 @@ import CardHeader from 'components/Card/CardHeader.js';
 import ordersStyle from './orderStyle';
 import CardIcon from 'components/Card/CardIcon';
 import { Print } from '@material-ui/icons';
-import { Icon, IconButton, Tooltip } from '@material-ui/core';
+import { Icon, Tooltip } from '@material-ui/core';
 import Button from 'components/CustomButtons/Button';
 import { orderItemMachine } from 'machines/orderItemMachine';
+import { orderMachine } from 'machines/orderMachine';
 import { useMachine } from '@xstate/react';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import CardBody from 'components/Card/CardBody';
 import { OrderItem } from './OrderItem';
 import { DisplayWhen } from 'utils/auth.utils';
-import ExpandIcon from '@material-ui/icons/ExpandMoreOutlined';
-import CollapseIcon from '@material-ui/icons/ExpandLessOutlined';
-import CardFooter from 'components/Card/CardFooter';
 
 const useStyles = makeStyles(ordersStyle);
 
@@ -39,6 +37,8 @@ export function OrderPrinter(props) {
     }
   });
 
+  const [stateItem, sendItem] = useMachine(orderMachine(itemOrder?.status || 'open'));
+
   const handleStatusChange = async (event, status) => {
     if (event.type === 'TOGGLE') {
       if (status === 'add') {
@@ -49,29 +49,26 @@ export function OrderPrinter(props) {
     }
   };
 
-  const nextContext = state.context[state.meta[`orderItem.${state.value}`].context];
-  
-  const [show, setShow] = React.useState(true)
+  React.useEffect(() => { 
+    if (!!itemOrder) {
+      sendItem(itemOrder.status.toUpperCase());
+    }
+  }, [itemOrder, sendItem]);
 
-  const orderItemBlock = !!itemOrder ? (
-    <CardFooter action style={{ justifyContent: 'center' }}>
-      <div className={classes.actionList}>
-        <Tooltip placement='bottom' title={show ? t('tooltip.item.hide') : t('tooltip.item.list')}>
-          <IconButton size='small' aria-label="list" onClick={() => setShow(!show)}
-            className={classNames({[classes.selected]: show, [classes[color]]: color})}>
-            {show ? <CollapseIcon fontSize="inherit"/> : <ExpandIcon fontSize="inherit"/>}
-          </IconButton>
-        </Tooltip>
-      </div>
-    </CardFooter>) : '';
-  
+  const { actual:actualItemContext } = stateItem.context;
+  const nextContext = state.context[state.meta[`orderItem.${state.value}`].context];
+
   return (
     <GridItem xs={12} sm={12} md={12}>
         <Card style={{ marginBottom: '5px' }}>
-          <CardHeader color={color} icon>
-            <CardIcon color={!!itemOrder ? color : 'gray'}>
-              <Print />
-            </CardIcon>
+          <CardHeader color={actualItemContext.color} icon>
+          <Tooltip placement='right' title={!! itemOrder ? t(actualItemContext.label) : t('error.item.order')}>
+            <div style={{ maxWidth: '50px'}}>
+              <CardIcon color={!!itemOrder ? actualItemContext.color : 'gray'}>
+                {!!itemOrder ? <Icon>{actualItemContext.icon}</Icon>: <Print /> }
+              </CardIcon>
+            </div>
+            </Tooltip>
             <GridContainer justifyContent='space-between'>
               <GridContainer justifyContent='flex-start'>
                 <h2 className={classes.cardPrinterTitle} style={{ marginLeft: '10px' }}>{`${printer.product.brand?.name}`}</h2>
@@ -92,9 +89,8 @@ export function OrderPrinter(props) {
             </GridContainer> 
           </CardHeader>
           <CardBody>
-            { !!itemOrder && show ? <OrderItem color={color} id={orderId} printer={printer._id} itemOrder={itemOrder}/> : null }
+            { !!itemOrder ? <OrderItem color={color} id={orderId} printer={printer._id} itemOrder={itemOrder}/> : null }
           </CardBody>
-          {orderItemBlock}
         </Card>            
     </GridItem>
   )

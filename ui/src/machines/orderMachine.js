@@ -1,88 +1,133 @@
-import Primary from 'components/Typography/Primary';
-import Success from 'components/Typography/Success';
-
-import { createMachine } from 'xstate';
-import Warning from 'components/Typography/Warning';
+import { assign, createMachine } from 'xstate';
 import { hasRole } from 'utils/auth.utils';
-import Danger from 'components/Typography/Danger';
 
-export const orderMachine = (initialState) =>  {
+export const orderMachine = (initialState, validate = {}) =>  {
+
   const isUser = !hasRole(['Admin', 'Moderator']);
 
   return createMachine({
     id: 'order',
     initial: initialState,
     context: {
-      closed: {
-        icon: 'published_with_changes',
-        label: 'label.order.status.closed',
-        actionLabel: 'label.action.order.close',
-        color: 'success',
-        component: Success,
-        spin: false
-      },
-      approve: {
-        icon: 'fingerprint',
-        label: 'label.order.status.approve',
-        actionLabel: 'label.action.order.approve',
-        color: 'warning',
-        component: Warning,
-        spin: false
-      },
-      wip: {
-        icon: 'sync',
-        label: 'label.order.status.wip',
-        actionLabel: 'label.action.order.wip',
-        color: 'primary',
-        component: Primary,
-        spin: true
-      },
-      open: {
+      actual: {
         icon: 'replay',
+        actionIcon: 'sync',
         label: 'label.order.status.open',
-        actionLabel: 'label.action.order.open',
+        actionLabel: 'label.action.order.wip',
         color: 'danger',
-        component: Danger,
-        spin: false
+        actionColor: 'primary',
+        spin: false,
+        actionSpin: true,
+        canExecute: false
       }
     },
     states: {
       closed: {
         on: { 
-          NEXT: { target: 'open', actions: ['notifyOpen'] },
-          CLOSE: { target: 'closed' }
+          NEXT: { 
+            target: 'wip',
+            actions: ['notifyWip']
+          },
+          CLOSED: { target: 'closed' },
+          WIP: { target: 'wip' },
+          APPROVE: {target: 'approve' },
+          OPEN: { target: 'open' }
         },
-        meta: {
-          context: isUser ? '' : 'open',
-        }
+        entry: [
+          assign({
+            actual: () => ({
+              icon: 'published_with_changes',
+              actionIcon: 'replay',
+              label: 'label.order.status.closed' ,
+              actionLabel: 'label.action.order.open',
+              color: 'success',
+              actionColor: 'danger',
+              spin: false,
+              actionSpin: false,
+              canExecute: !isUser
+            })
+          })
+        ]
       },
       approve: {
         on: { 
-          NEXT: { target: 'closed', actions: ['notifyClosed'] },
-          CLOSE: { target: 'closed' }
+          NEXT: { 
+            target: 'closed',
+            actions: ['notifyClosed']
+          },
+          CLOSED: { target: 'closed' },
+          WIP: { target: 'wip' },
+          APPROVE: {target: 'approve' },
+          OPEN: { target: 'open' }
         },
-        meta: {
-          context: isUser ? '' : 'closed',
-        }
+        entry: [
+          assign({
+            actual: () => ({
+              icon: 'fingerprint',
+              actionIcon: 'published_with_changes',
+              label: 'label.order.status.pending' ,
+              actionLabel: 'label.action.order.close',
+              color: 'warning',
+              actionColor: 'success',
+              spin: false,
+              actionSpin: false,
+              canExecute: !isUser
+            })
+          })
+        ]
       },
       wip: {
         on: { 
-          NEXT: { target: isUser ? 'approve' : 'closed', actions: [isUser ? 'notifyApprove' : 'notifyClosed'] },
-          CLOSE: { target: 'closed' }
+          NEXT: { target: 'validate' },
+          CLOSED: { target: 'closed' },
+          WIP: { target: 'wip' },
+          APPROVE: {target: 'approve' },
+          OPEN: { target: 'open' }
         },
-        meta: {
-          context: isUser ? 'approve' : 'closed',
-        }
+        entry: [
+          assign({
+            actual: () => ({ 
+              icon: 'sync',
+              actionIcon: isUser ? 'fingerprint' : 'published_with_changes',
+              label: isUser ? 'label.order.status.pending' : 'label.order.status.closed',
+              actionLabel: isUser ? 'label.action.order.approve' : 'label.action.order.close',
+              color: 'primary',
+              actionColor: isUser ? 'warning' : 'success',
+              spin: true,
+              actionSpin: false,
+              canExecute: true
+            })
+          })
+        ]
       },
       open: {
         on: { 
-          NEXT: { target: 'wip', actions: ['notifyWip'] },
-          CLOSE: { target: 'closed' }
+          NEXT: {
+            target: 'wip',
+            actions: ['notifyWip']
+          },
+          CLOSED: { target: 'closed' },
+          WIP: { target: 'wip' },
+          APPROVE: {target: 'approve' },
+          OPEN: { target: 'open' }
         },
-        meta: {
-          context: 'wip',
-        }
-      }
+        entry: [
+          assign({
+            actual: () => ({ 
+              icon: 'replay',
+              actionIcon: 'sync',
+              label: 'label.order.status.open',
+              actionLabel: 'label.action.order.wip',
+              color: 'danger',
+              actionColor: 'primary',
+              spin: false,
+              actionSpin: true,
+              canExecute: true
+            })
+          })
+        ]
+      },
+      validate
     }
   });
 }

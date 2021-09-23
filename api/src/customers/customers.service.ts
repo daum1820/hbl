@@ -13,7 +13,7 @@ export class CustomersService {
   private readonly logger = new Logger(CustomersService.name);
 
   fields: BaseFieldsDto[] = [
-    {fieldName: 'code', fieldType : 'number'},
+    {fieldName: 'customerNumber', fieldType : 'number'},
     {fieldName: 'name', fieldType : 'string'},
     {fieldName: 'fullName', fieldType : 'string'},
     {fieldName: 'contactName', fieldType : 'string'},

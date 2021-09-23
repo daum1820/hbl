@@ -176,6 +176,7 @@ export function InvoiceItem({ id, color }) {
             </CardBody>  
             <CardFooter>
                 <Button
+                  round
                   type='submit'
                   color={color}>
                   {t('button.add.invoice.item')}

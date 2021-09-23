@@ -25,15 +25,8 @@ export function formatCurrency(amount: number, isDebit: boolean = false) {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(amount);
 }
 
-export function formatReportNr(reportNr: number, size: number = 6, char: string = '0') {
-  return reportNr.toString().padStart(size, char);
-}
-
-export function formatRegistration(nr: string, code: number) {
-  if(!!nr) {
-    return ` (${nr})`;
-  }
-  return ` (${formatReportNr(code, 5)})`;
+export function formatInt(amount: number) {
+  return (new Intl.NumberFormat('pt-BR').format(amount)).split(',').join('.');
 }
 
 export function formatFullDate(date: Date) {

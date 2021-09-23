@@ -23,6 +23,8 @@ import { FormHelperText, InputLabel, MenuItem, Select, TextField } from '@materi
 import { getCategorySelector } from 'features/categories.feature';
 import CardFooter from 'components/Card/CardFooter';
 import Button from 'components/CustomButtons/Button';
+import ConfirmDelete from 'components/Common/ConfirmDelete';
+import { DisplayWhen } from 'utils/auth.utils';
 
 const useStyles = makeStyles(styles);
 
@@ -159,12 +161,18 @@ export function CategoriesDetails({color = 'rose'}) {
               </GridContainer>
             </CardBody>  
             <CardFooter>
-                <Button
-                  type='submit'
-                  color={color}>
-                  {t('button.save.category')}
-                </Button>
-              </CardFooter>
+              <DisplayWhen roles={['Admin']}>
+                <GridItem container justifyContent='flex-start'>
+                  <Button
+                    round
+                    type='submit'
+                    color={color}>
+                    {t('button.save.category')}
+                  </Button>
+                  <ConfirmDelete id={id} color={color} context='categories' removeAction={sagaActions.DELETE_CATEGORY}/>
+                </GridItem> 
+              </DisplayWhen>
+            </CardFooter>
           </Card>
         </form>
       </GridItem>

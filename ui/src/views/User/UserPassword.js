@@ -167,6 +167,7 @@ export function UserPassword({ id, color='primary', showChangePassword = true, t
         </CardBody> 
         <CardFooter>
           <Button
+            round
             type='submit'
             variant='contained'
             color={color}>
