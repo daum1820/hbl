@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Header, InternalServerErrorException, Logger, Param, Post, Put, Query, Req, Res, Response } from '@nestjs/common';
-import { BaseQueryDto, BasePaginationDto } from '../base/base.dto';
+import { BaseQueryDto, BasePaginationDto, PincodeDto } from '../base/base.dto';
 import { reduceModel } from '../utils';
 import { Public } from '../commons/decorators/public.decorator';
 import { Roles } from '../commons/decorators/roles.decorator';
@@ -183,6 +183,25 @@ export class OrdersController {
     this.logger.log(`< close - result: ${JSON.stringify(result)}`);
     return this.readOne(id);
     
+  }
+
+  @Put(':id/approve')
+  async approve(@Param('id') id: string, @Body() pincodeDto: PincodeDto, @Req() req): Promise<OrderDto> {
+    this.logger.log(`> approve - ${id}`);
+    
+    const order = await this.ordersService.findById(id);
+    console.info(order.customer.pincode, pincodeDto.pincode, order.customer.pincode !== pincodeDto.pincode)
+    if (!order || order.customer.pincode !== pincodeDto.pincode) {
+      const error = {
+        pincode: 'error.pincode.invalid',
+      }
+      this.logger.error(error);
+      throw new InternalServerErrorException(error);
+    }
+
+    this.logger.log(`< approve - result: ${JSON.stringify(order)}`);
+    await this.ordersService.approve(id, req);
+    return this.readOne(id);
   }
 
   @Put(':id/changeStatus')

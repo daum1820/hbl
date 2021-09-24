@@ -5,6 +5,7 @@ import { fetch, list, remove, dashboard, error } from 'features/orders.feature';
 import { sagaActions }from './actions.saga';
 import { pushError, pushSuccess } from 'sagas';
 import history from 'lib/history';
+import { delay } from './common.saga';
 
 export function* saveOrder({ payload }) {  
   try {
@@ -92,6 +93,22 @@ export function* closeOrder({ payload }) {
   }
 }
 
+export function* approveOrder({ payload, callback }) {
+  try {
+    const { id, ...payloadData } = payload;
+    const { data } = yield call(API.put, { url: `/orders/${id}/approve`, data: payloadData });
+    yield put(fetch(data));
+    yield pushSuccess('approveOrder', { message: 'message.order.approve.success'});
+  } catch (err) {
+    yield put(error(err?.response?.data));
+    yield pushError('approveOrder', err);
+  }
+
+  yield delay(200);
+  yield callback();
+}
+
+
 export function* createItem({ payload }) {
   try {
     const { id, ...data } = payload;
@@ -140,4 +157,5 @@ export default function* watchOrdersSaga() {
   yield takeLatest(sagaActions.ORDER_REMOVE_ITEM, deleteItem)
   yield takeLatest(sagaActions.ORDER_UPDATE_ITEM, updateItem)
   yield takeLatest(sagaActions.ORDER_CLOSE, closeOrder)
+  yield takeLatest(sagaActions.ORDER_APPROVE, approveOrder)
 }

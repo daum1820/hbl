@@ -42,3 +42,7 @@ export const buildArrayFilter = (search: string, fields: BaseFieldsDto[]): any  
     return regExp.test(value.toString());
   })
 }
+
+export const generatePincode = (min: number = 1000, max: number = 9999) => {
+  return Math.floor(Math.random() * (max - min + 1) + min).toString().padStart(max.toString().length, '0');
+}

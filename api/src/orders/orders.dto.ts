@@ -1,4 +1,4 @@
-import { IsNumber, IsEnum, IsOptional, IsDate, IsString } from 'class-validator';
+import { IsNumber, IsEnum, IsOptional, IsDate, IsString, IsBoolean } from 'class-validator';
 import { Categories } from '../categories/categories.schema';
 import { Printer } from '../printers/printers.schema';
 import { BaseIdDto } from '../base/base.dto';
@@ -56,6 +56,18 @@ export class OrderItemDto extends BaseIdDto {
   @IsOptional()
   finishedAt: Date;
 
+  @IsString()
+  @IsOptional()
+  approvedBy: string;
+
+  @IsDate()
+  @IsOptional()
+  approvedAt: Date;
+
+  @IsBoolean()
+  @IsOptional()
+  approvedByCustomer: Boolean;
+
   constructor(orderItem?: OrderItemDocument) {
     super(orderItem?._id);
 
@@ -71,6 +83,9 @@ export class OrderItemDto extends BaseIdDto {
       this.nos = orderItem.nos;
       this.startedAt = orderItem.startedAt;
       this.finishedAt = orderItem.finishedAt;
+      this.approvedBy = orderItem.approvedBy;
+      this.approvedAt = orderItem.approvedAt;
+      this.approvedByCustomer = orderItem.approvedByCustomer;
     }
   }
 }

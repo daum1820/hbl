@@ -20,7 +20,7 @@ export function OrderStatus(props) {
   const classes = useStyles();
   const { t } = useTranslation();
   
-  const isUser = !hasRole(['Admin', 'Moderator']);
+  const isUser = !hasRole(['Admin']);
 
   const validate = {
     invoke: {

@@ -18,6 +18,9 @@ const styles = {
     color: successColor[0],
     marginTop: '10px'
   },
+  spin: {
+    animation: '$circular-rotate 1.4s linear infinite',
+  },
   cardTitle: {
     minHeight: "auto",
     fontWeight: "300",
@@ -49,6 +52,15 @@ const styles = {
     color: `${whiteColor} !important`,
     backgroundColor: `${primaryColor[0]} !important`,
     borderColor: `${primaryColor[0]} !important`
-  }
+  },
+  '@keyframes circular-rotate': {
+    '0%': {
+      // Fix IE 11 wobbly
+      transformOrigin: '50% 50%',
+    },
+    '100%': {
+      transform: 'rotate(360deg)',
+    },
+  },
 };
 export default styles;

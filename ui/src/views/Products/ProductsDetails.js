@@ -42,14 +42,14 @@ export function ProductsDetails({color = 'success'}) {
   const productTypes = useSelector(getTypeSelector('productTypes'), shallowEqual);
   const validationError = useSelector((state) => state.products.error);
 
-  const [isPrinter, setIsPrinter] = React.useState(!isEmpty(product) && product.type === 'Printer');
+  const [notService, setNotService] = React.useState(!isEmpty(product) && product.type !== 'Service');
   
   const userFormSchema = yup.object().shape({
     model: yup.string().required('error.field.required'),
     description: yup.string().required('error.field.required'),
     type: yup.string().required('error.field.required'),
     brand: yup.string().when('type', {
-      is: 'Printer',
+      is: (type) => type !== 'Service',
       then: yup.string().required('error.field.required'),
       otherwise: yup.string()
     }),
@@ -81,7 +81,7 @@ export function ProductsDetails({color = 'success'}) {
     
     if(!!product && editMode) {
       reset({...product})
-      setIsPrinter(!isEmpty(product.type) && product.type === 'Printer');
+      setNotService(!isEmpty(product.type) && product.type !== 'Service');
     }
   }, [dispatch, reset, id, editMode, product]);
 
@@ -92,8 +92,8 @@ export function ProductsDetails({color = 'success'}) {
   if (query.has('type')) {
     const type = query.get('type');
     setValue('type', type);
-    if(isPrinter !== (!isEmpty(type) && type === 'Printer')) {
-      setIsPrinter(!isEmpty(type) && type === 'Printer');
+    if(notService !== (!isEmpty(type) && type !== 'Service')) {
+      setNotService(!isEmpty(type) && type !== 'Service');
     }
   }
 
@@ -126,7 +126,7 @@ export function ProductsDetails({color = 'success'}) {
                         name="type"
                         value={value || ''}
                         onChange={e => {
-                          setIsPrinter(e.target.value === 'Printer')
+                          setNotService(e.target.value !== 'Service')
                           onChange(e.target.value)
                         }}>
                         {productTypes.map((props, key) => (
@@ -152,7 +152,7 @@ export function ProductsDetails({color = 'success'}) {
                         required
                         fullWidth
                         id="model"
-                        label={t(isPrinter ? 'label.model' : 'label.code')}
+                        label={t(notService ? 'label.model' : 'label.code')}
                         name="model"
                         value={value || '' }
                         error={ formState.isSubmitted && (!!errors.model || !!validationError?.model) }
@@ -184,7 +184,7 @@ export function ProductsDetails({color = 'success'}) {
                     )}
                   />
                 </GridItem>
-                {isPrinter ? (
+                {notService ? (
                 <GridItem xs={12} sm={12}  md={12}>
                   <Controller
                       control={control}

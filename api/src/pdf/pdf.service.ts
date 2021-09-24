@@ -1,5 +1,6 @@
 import * as path from 'path';
 import PDFDocument from 'pdfkit';
+import md5 from 'md5';
 
 import { Injectable, Logger } from '@nestjs/common';
 import { Invoice, InvoiceItem } from '../invoices/invoices.schema';
@@ -25,7 +26,7 @@ export class PdfService {
     let lastPosition = this.generateInvoiceHeader(doc, invoice, 180);
     lastPosition = this.generateInvoiceItems(doc, invoice, lastPosition);
     this.generateExtraInfo(doc, invoice, lastPosition);
-    this.generateFooter(doc);
+    this.generateInvoiceFooter(doc);
   
     doc.end();
     doc.pipe(createWriteStream(filepath));
@@ -49,8 +50,8 @@ export class PdfService {
       }
       await this.generateHeader(doc, 'orderEmail');
       let lastPosition = this.generateOrderHeader(doc, order, orderItem, 180);
-      this.generateOrderBody(doc, order, orderItem, lastPosition);
-      this.generateFooter(doc);
+      lastPosition = this.generateOrderBody(doc, order, orderItem, lastPosition);
+      await this.generateOrderFooter(doc, orderItem, order.customer, lastPosition);
       
     }
     
@@ -348,7 +349,7 @@ export class PdfService {
       .text(`${order.problem?._id || ''} - ${order.problem?.name || ''}`, 118, problemPostion + 15, { align: 'center' })
       .font("Helvetica")
       .text('Ação:', 55, problemPostion + 45)
-      .text(`${orderItem.actions || ''}`, 118, problemPostion + 43);
+      .text(`${orderItem.actions || ''}`, 118, problemPostion + 42);
     
     hr(doc, problemPostion + 52, 115);
     hr(doc, problemPostion + 82, 115);
@@ -358,12 +359,14 @@ export class PdfService {
     doc
       .fontSize(9)
       .text('Observações:', 55, obsPosition)
-      .text(`${orderItem.notes || ''}`, 118, obsPosition - 2);
+      .text(`${orderItem.notes || ''}`, 118, obsPosition - 3);
 
     hr(doc, obsPosition + 7, 115);
     hr(doc, obsPosition + 37, 115);
     hr(doc, obsPosition + 67, 115);
     hr(doc, obsPosition + 97);
+
+    return obsPosition + 97;
   }
 
   generateExtraInfo(doc: PDFDocument, invoice: Invoice, position: number) {
@@ -378,12 +381,24 @@ export class PdfService {
     .text(`Valor aproximado dos tributos: PIS (0.65% = ${formatCurrency(invoice.amount * 0.0065)} / COFINS (3.00% =  ${formatCurrency(invoice.amount * 0.03)})`, 125, 710)
   }
   
-  generateFooter(doc: PDFDocument) {
+  generateInvoiceFooter(doc: PDFDocument) {
     hr(doc, 725);
     doc
     .fontSize(10)
     .text('Assinatura ou Autenticação:', 50, 730)
     .text('Data:', 425, 730)
+  }
+
+  async generateOrderFooter(doc: PDFDocument, orderItem: OrderItem, customer: Customer, lastPosition: number) {
+    doc
+    .fontSize(10)
+    .text('Assinatura ou Autenticação:', 50, lastPosition + 5)
+    .font("Helvetica-Bold")
+    .text(`${!!orderItem.approvedBy ? `${orderItem.approvedBy} ${orderItem.approvedByCustomer ? `(${md5(orderItem.approvedBy + customer.pincode)})` : '' }` : ''}`, 60, lastPosition + 20)
+    .font("Helvetica")
+    .text("Data:", 425, lastPosition + 5)
+    .font("Helvetica-Bold")
+    .text(`${!!orderItem.approvedAt ? formatFullDate(orderItem.approvedAt) : ''}`, 430, lastPosition + 20)
   }
   
   generateTableRow(

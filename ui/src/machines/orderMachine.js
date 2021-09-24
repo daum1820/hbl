@@ -3,7 +3,7 @@ import { hasRole } from 'utils/auth.utils';
 
 export const orderMachine = (initialState, validate = {}) =>  {
 
-  const isUser = !hasRole(['Admin', 'Moderator']);
+  const isUser = !hasRole(['Admin']);
 
   return createMachine({
     id: 'order',

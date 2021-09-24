@@ -31,3 +31,7 @@ export interface BaseFieldsDto {
 export interface ChangeStatusDto {
   status: ActiveStatus;
 }
+
+export interface PincodeDto {
+  pincode: string;
+}

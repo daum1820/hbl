@@ -5,6 +5,7 @@ import { fetch, list, remove, count, error, removePrinter, addPrinter } from 'fe
 import { sagaActions }from './actions.saga';
 import { pushError, pushSuccess } from 'sagas';
 import history from 'lib/history';
+import { delay } from './common.saga';
 
 export function* saveCustomer({ payload }) {  
   try {
@@ -106,6 +107,20 @@ export function* deletePrinter({ payload }) {
   }
 }
 
+export function* pincode ({ payload, callback }) {
+  try {
+    const { id, ...payloadData } = payload;
+    const { data } = yield call(API.put, { url: `/customers/${id}/pincode`, data: payloadData });
+    yield put(fetch(data));
+    yield delay(200);
+    yield callback();
+    yield pushSuccess('pincode', { message: 'message.customer.pincode.success'});
+  } catch (err) {
+    yield put(error(err?.response?.data));
+    yield pushError('pincode', err);
+  }
+}
+
 export default function* watchCustomersSaga() {
   yield takeEvery(sagaActions.COUNT_CUSTOMERS, countCustomers)
   yield takeLatest(sagaActions.LIST_CUSTOMERS, listCustomers)
@@ -115,4 +130,5 @@ export default function* watchCustomersSaga() {
   yield takeLatest(sagaActions.CUSTOMER_CHANGE_STATUS, customerStatus)
   yield takeLatest(sagaActions.CUSTOMER_DELETE_PRINTER, deletePrinter)
   yield takeLatest(sagaActions.CUSTOMER_ADD_PRINTER, createPrinter)
+  yield takeLatest(sagaActions.CUSTOMER_PINCODE, pincode)
 }

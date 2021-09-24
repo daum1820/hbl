@@ -45,6 +45,7 @@
       "save.success": "OS foi salva com sucesso",
       "remove.success": "OS foi removida com sucesso",
       "status.success": "Status da OS foi salvo com sucesso",
+      "approve.success": "OS foi aprovada pelo cliente com sucesso",
       "item": {
         "remove.success": "Equipamento foi removida com sucesso",
         "add.success": "Equipamento foi adicionada com sucesso"
@@ -54,6 +55,7 @@
       "save.success": "Cliente foi salvo com sucesso",
       "status.success": "Status do cliente foi salvo com sucesso",
       "remove.success": "Cliente foi removido com sucesso",
+      "pincode.success": "Pincode foi gerado com sucesso",
       "printer": {
         "remove.success": "Impressora foi removido com sucesso",
         "add.success": "Impressora foi adicionada com sucesso"
@@ -107,8 +109,12 @@
         "text" : "Tipo de produto",
         "printer": "Impressora",
         "service": "Serviço",
+        "input": "Insumo",
+        "partnumber": "Peça",
         "printers": "Impressoras",
-        "services": "Serviços"
+        "services": "Serviços",
+        "inputs": "Insumos",
+        "partnumbers": "Peças"
       },
       "brand": "Fabricante"
     },
@@ -130,6 +136,7 @@
       "createdAt": "Aberto em",
       "startedAt": "Início em",
       "finishedAt": "Término em",
+      "approve": "Aprovar",
       "status" : {
         "text": "Status da OS",
         "empty": "Sem equipamentos",
@@ -220,7 +227,8 @@
     "customer": {
       "text": "Cliente",
       "name": "Nome do cliente",
-      "printer": "Impressora"
+      "printer": "Impressora",
+      "newPincode": "Gerar novo pincode"
     },
     "customers": {
       "text": "Clientes ativos",
@@ -231,6 +239,7 @@
       "contactEmail" : "E-mail do contato",
       "contactPhone" : "Telefone do contato",
       "registrationNr": "CNPJ/CPF",
+      "pincode": "Pincode",
       "printer": {
         "add": "Cadastrar Impressora",
         "model": "Modelo da impressora"
@@ -315,6 +324,9 @@
     },
     "item": {
       "order" : "Equipamento nāo incluso na OS"
+    },
+    "pincode" : {
+      "invalid" : "Pincode inválido"
     },
     "field": {
       "required": "Este campo é obrigatório",

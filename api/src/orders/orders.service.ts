@@ -45,8 +45,7 @@ export class OrdersService {
   async findAll(filter: BaseQueryDto = {}, limit: number = 5, pageNumber: number = 0, sort: any = { _id: 'asc'}): Promise<OrderDocument[]> {
     const { search, ...rest } = filter;
     const items = await this.find(rest, sort);
-    
-    return items.filter(buildArrayFilter(search, this.fields)).slice(pageNumber * limit, (pageNumber + 1) * limit);
+    return items.filter(buildArrayFilter(search, this.fields)).slice(Number(pageNumber) * Number(limit), (Number(pageNumber) + 1) * Number(limit));
   }
 
   async count(filter: BaseQueryDto = {}): Promise<number> {
@@ -93,12 +92,16 @@ export class OrdersService {
   }
 
   async close(id: string, lastUpdatedBy: UserDto): Promise<OrderDocument> {
-    const order = await this.model.findById(id).exec();
+    const order: OrderDocument = await this.model.findById(id)
+      .exec();
 
     order.status = OrderStatus.Closed;
     order.items.forEach(i => {
       i.startedAt = !!i.startedAt ? i.startedAt : new Date();
       i.finishedAt = !!i.finishedAt ? i.finishedAt : new Date();
+      i.approvedAt = !!i.approvedAt ? i.approvedAt : new Date();
+      i.approvedBy = `${lastUpdatedBy.name} ${lastUpdatedBy.lastName}`
+      i.approvedByCustomer = false
       i.status = OrderItemStatus.Closed
     });
     
@@ -108,9 +111,31 @@ export class OrdersService {
     ).exec();
   }
 
+  async approve(id: string, lastUpdatedBy: UserDto): Promise<OrderDocument> {
+    const order: OrderDocument = await this.model.findById(id)
+      .populate({ path: 'customer', model: 'Customer' })
+      .exec();
+
+    order.items.filter(i => i.status === OrderItemStatus.Approve).forEach(i => {
+      i.startedAt = !!i.startedAt ? i.startedAt : new Date();
+      i.finishedAt = !!i.finishedAt ? i.finishedAt : new Date();
+      i.approvedAt = !!i.approvedAt ? i.approvedAt : new Date();
+      i.approvedBy = order.customer?.contactName || `${lastUpdatedBy.name} ${lastUpdatedBy.lastName}`
+      i.approvedByCustomer = true
+      i.status = OrderItemStatus.Closed
+    });
+    
+    await this.model.findByIdAndUpdate(
+      id,
+      order
+    ).exec();
+
+    return this.updateOrderStatus(id, lastUpdatedBy);
+  }
+
   async changeStatus(id: string, statusDto: OrderStatusDto, lastUpdatedBy: UserDto): Promise<OrderDocument> {
     const { itemOrderId, status } = statusDto;
-    const order = await this.model.findById(id).exec();
+    const order: OrderDocument = await this.model.findById(id).exec();
 
     const itemOrder = order.items.find(i => i._id.toString() === itemOrderId);
 
@@ -121,6 +146,10 @@ export class OrdersService {
         order.technicalUser = !!order.technicalUser ? order.technicalUser : lastUpdatedBy._id as unknown as User;
         break;
       case OrderItemStatus.Closed:
+        itemOrder.finishedAt = !!itemOrder.finishedAt ? itemOrder.finishedAt : new Date();
+        itemOrder.approvedAt = !!itemOrder.approvedAt ? itemOrder.approvedAt : new Date();
+        itemOrder.approvedBy = `${lastUpdatedBy.name} ${lastUpdatedBy.lastName}`;
+        itemOrder.approvedByCustomer = false;
       case OrderItemStatus.Approve:
         itemOrder.finishedAt = !!itemOrder.finishedAt ? itemOrder.finishedAt : new Date();
         break;

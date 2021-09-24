@@ -5,7 +5,7 @@ import { Role } from '../commons/enum/enums';
 import { CustomerDto } from './customers.dto';
 import { CustomerDocument } from './customers.schema';
 import { CustomersService } from './customers.service';
-import { BasePaginationDto, BaseQueryDto, ChangeStatusDto } from '../base/base.dto';
+import { BasePaginationDto, BaseQueryDto, ChangeStatusDto, PincodeDto } from '../base/base.dto';
 import { reduceModel } from '../utils';
 import { PrinterDocument } from '../printers/printers.schema';
 
@@ -119,6 +119,28 @@ export class CustomersController {
     }
     
     const updatedCustomer: CustomerDocument = await this.customersService.update(id, changeStatusDto);
+
+    this.logger.log(`< changeSecurity - result: ${JSON.stringify(updatedCustomer)}`);
+    return this.readOne(id);
+  }
+
+
+  @Put(':id/pincode')
+  async pincode(@Param('id') id: string): Promise<CustomerDto> {
+
+    this.logger.log(`> pincode - Customer id ${id}`);
+
+    const existsCustomer = await this.customersService.findById(id);
+
+    if (!existsCustomer) {
+      const error = {
+        key: 'error.customer.not.found'
+      }
+      this.logger.error(error);
+      throw new InternalServerErrorException(error);
+    }
+    
+    const updatedCustomer: CustomerDocument = await this.customersService.pincode(id);
 
     this.logger.log(`< changeSecurity - result: ${JSON.stringify(updatedCustomer)}`);
     return this.readOne(id);

@@ -72,7 +72,7 @@ export class ProductsController  {
     }
     
     const existsModelTypeProduct = await this.productsService.exists({ model: productDto.model, type: productDto.type });
-    if (!!existsModelTypeProduct && productDto.type === ProductTypes.Service) {
+    if (!!existsModelTypeProduct && productDto.type !== ProductTypes.Printer) {
       const error = {
         model: 'error.model.type.exists',
         type: 'error.model.type.exists',

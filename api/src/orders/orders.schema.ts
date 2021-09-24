@@ -47,6 +47,15 @@ export class OrderItem {
   @Prop({ type: Date })
   finishedAt: Date;
 
+  @Prop({ required: false })
+  approvedBy: string;
+
+  @Prop({ type: Date })
+  approvedAt: Date;
+
+  @Prop({ type: Boolean })
+  approvedByCustomer: boolean;
+
   constructor(orderItem: Partial<OrderItem>) {
     Object.assign(this, orderItem);
   }

@@ -29,6 +29,7 @@ import { getCustomerPrintersSelectorFactory } from 'features/customers.feature';
 import { CustomerPrinter } from './CustomerPrinter';
 import ConfirmDelete from 'components/Common/ConfirmDelete';
 import { DisplayWhen } from 'utils/auth.utils';
+import { Pincode } from '../../components/Common/Pincode';
 
 const useStyles = makeStyles(styles);
 
@@ -54,6 +55,8 @@ export function CustomersDetails({color = 'success'}) {
     resolver: yupResolver(userFormSchema),
   });
 
+  const [pincode, setPincode] = React.useState(customer?.pincode);
+
   React.useEffect(() => {
     const loadData = async () => await dispatch({ type: sagaActions.READ_CUSTOMER, payload: { id } });
     if (editMode && (isEmpty(customer) || id !== customer._id)) {
@@ -62,6 +65,7 @@ export function CustomersDetails({color = 'success'}) {
     
     if(!!customer && editMode) {
       reset({...customer})
+      setPincode(customer.pincode);
     }
   }, [dispatch, reset, id, editMode, customer]);
 
@@ -74,7 +78,7 @@ export function CustomersDetails({color = 'success'}) {
       <GridContainer>
         <GridItem xs={12} sm={12} md={8}>
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
-            <Card>
+            <Card style={{ minHeight: '485px'}}>
               <CardHeader color={color} icon>
                 <CardIcon color={color}>
                   <PrintIcon /> 
@@ -338,7 +342,19 @@ export function CustomersDetails({color = 'success'}) {
           </form>
         </GridItem>
         <GridItem xs={12} sm={12} md={4}>
-          { editMode && !!customer ? <CustomerPrinter id={id} color={color} /> : ''}
+          <GridItem xs={12} sm={12} md={12}>
+            { editMode && !!customer ? <CustomerPrinter id={id} color={color} /> : null}
+          </GridItem>
+          <GridItem xs={12} sm={12} md={12}>
+            { editMode && !!pincode ? <Pincode id={id} 
+              color={color}
+              pincode={pincode}
+              allowGeneration
+              title={t('label.customer.newPincode')}
+              header={t('label.customers.pincode' )}
+              action={sagaActions.CUSTOMER_PINCODE}
+            /> : null}
+          </GridItem>
         </GridItem>
       </GridContainer>
       { editMode ? (

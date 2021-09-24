@@ -53,6 +53,9 @@ export class CustomerDto extends BaseIdDto {
   @IsString()
   public contactEmail: string;
 
+  @IsString()
+  public pincode: string;
+
   @IsOptional()
   public printers: {};
 
@@ -74,6 +77,7 @@ export class CustomerDto extends BaseIdDto {
       this.contactPhone = customer.contactPhone;
       this.printers = customer.printers.reduce(reduceModel(), {});
       this.status = customer.status;
+      this.pincode = customer.pincode;
     }
   }
 }

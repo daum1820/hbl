@@ -42,6 +42,9 @@ export class Customer {
   @Prop({ required: false })
   contactEmail: string;
 
+  @Prop({ required: true })
+  pincode: string;
+
   @Prop([PrinterSchema])
   printers: Printer[];
 

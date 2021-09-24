@@ -35,6 +35,7 @@ import Muted from 'components/Typography/Muted';
 import Warning from 'components/Typography/Warning';
 import Primary from 'components/Typography/Primary';
 import ConfirmDelete from 'components/Common/ConfirmDelete';
+import { Pincode } from 'components/Common/Pincode';
 
 const useStyles = makeStyles(ordersStyle);
 
@@ -138,6 +139,17 @@ export function OrderDetails({color = 'warning'}) {
 
   return (
     <GridContainer>
+      <DisplayWhen roles={['User', 'Moderator']}>
+        <GridItem xs={12} sm={12} md={12}>
+          { !!order  && order.status === 'pending' ? <Pincode id={id} 
+            color={color}
+            title={t('label.order.approve')}
+            header={t(actualContext.label)}
+            icon='check'
+            action={sagaActions.ORDER_APPROVE}
+          /> : null}
+        </GridItem>
+      </DisplayWhen>
       <GridItem xs={12} sm={12} md={12}>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <Card>
@@ -151,7 +163,7 @@ export function OrderDetails({color = 'warning'}) {
                   <Icon className={classNames({ [classes.spin]: actualContext.spin, [classes[actualContext.color]]: actualContext.color })}>
                     {actualContext.icon}
                   </Icon>
-                  <div style={{ marginTop: '15px' }}>
+                  <div style={{ margin: '12px 5px' }}>
                     <actualContext.component>
                       {t(actualContext.label)}
                     </actualContext.component>
@@ -301,7 +313,7 @@ export function OrderDetails({color = 'warning'}) {
                 </GridItem>
               </DisplayWhen>
               <GridItem container justifyContent='flex-end'>
-                <DisplayWhen roles={['Admin', 'Moderator']} check={() => order?.status !== 'closed'}>
+                <DisplayWhen roles={['Admin']} check={() => order?.status !== 'closed'}>
                   <Tooltip placement='left' title={isDirty ? t('error.save.order.first') : !isValid ? t('error.save.order.required') : t(closeContext.actionLabel)}>
                     <div style={{ margin : '10px 0px'}}>
                       <Button justIcon round size='sm' color={closeContext.color} className={classes.statusButton} onClick={closeOrder}

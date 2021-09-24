@@ -45,7 +45,7 @@ export function CustomerPrinter({ id, color }) {
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <Card style={{ minHeight: '460px'}}>
+          <Card>
             <CardHeader color={color} icon>
             <CardIcon color={color}>
               <CategoryIcon /> 
@@ -106,13 +106,13 @@ export function CustomerPrinter({ id, color }) {
               </GridContainer>
             </CardBody>  
             <CardFooter>
-                <Button
-                  round
-                  type='submit'
-                  color={color}>
-                  {t('button.add.printer')}
-                </Button>
-              </CardFooter>
+              <Button
+                round
+                type='submit'
+                color={color}>
+                {t('button.add.printer')}
+              </Button>
+            </CardFooter>
           </Card>
         </form>
       </GridItem>

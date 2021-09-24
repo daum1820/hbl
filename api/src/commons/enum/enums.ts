@@ -12,6 +12,8 @@ export enum ActiveStatus {
 export enum ProductTypes {
   Printer = 'Printer',
   Service = 'Service',
+  Input = 'Input',
+  Partnumber = 'Partnumber',
 }
 
 export enum CategoryTypes {

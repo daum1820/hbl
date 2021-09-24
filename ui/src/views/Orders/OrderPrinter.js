@@ -65,7 +65,7 @@ export function OrderPrinter(props) {
           <Tooltip placement='right' title={!! itemOrder ? t(actualItemContext.label) : t('error.item.order')}>
             <div style={{ maxWidth: '50px'}}>
               <CardIcon color={!!itemOrder ? actualItemContext.color : 'gray'}>
-                {!!itemOrder ? <Icon>{actualItemContext.icon}</Icon>: <Print /> }
+                {!!itemOrder ? <Icon className={classNames({ [classes.spin]: actualItemContext.spin})}>{actualItemContext.icon}</Icon>: <Print /> }
               </CardIcon>
             </div>
             </Tooltip>

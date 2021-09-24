@@ -179,7 +179,7 @@ export function OrderItem(props) {
             )}
           />
         </GridItem>
-        <DisplayWhen roles={['Admin', 'Moderator']}>
+        <DisplayWhen roles={['Admin']}>
           <GridItem xs={12} sm={12} md={2}>
             <MuiPickersUtilsProvider libInstance={moment} utils={MomentUtils} locale="pt-br">
               <Controller

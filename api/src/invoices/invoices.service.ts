@@ -63,7 +63,7 @@ export class InvoicesService {
     const { search, ...rest } = filter;
     const items = await this.find(rest, sort);
     
-    return items.filter(buildArrayFilter(search, this.fields)).slice(pageNumber * limit, (pageNumber + 1) * limit);
+    return items.filter(buildArrayFilter(search, this.fields)).slice(Number(pageNumber) * Number(limit), (Number(pageNumber) + 1) * Number(limit));
   }
 
   async count(filter: BaseQueryDto = {}): Promise<number> {

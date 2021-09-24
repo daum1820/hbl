@@ -5,8 +5,8 @@ import { PrinterDto } from '../printers/printers.dto';
 import { CustomerDto } from './customers.dto';
 import { Customer, CustomerDocument } from './customers.schema';
 import { PrintersService } from '../printers/printers.service';
-import { BaseFieldsDto, BaseQueryDto } from '../base/base.dto';
-import { buildFilter } from '../utils';
+import { BaseFieldsDto, BaseQueryDto, PincodeDto } from '../base/base.dto';
+import { buildFilter, generatePincode } from '../utils';
 import { PrinterDocument } from '../printers/printers.schema';
 @Injectable()
 export class CustomersService {
@@ -26,6 +26,7 @@ export class CustomersService {
   }
   
   async create(newCustomer: CustomerDto): Promise<CustomerDocument> {
+    newCustomer.pincode = generatePincode();
     const createdCustomer = new this.model(newCustomer);
     return createdCustomer.save();
   }
@@ -34,6 +35,12 @@ export class CustomersService {
     const { printers, ...customerDto } = customer;
     return this.model.findByIdAndUpdate(id, customerDto).exec();
   }
+
+  async pincode(id: string): Promise<CustomerDocument> {
+    const pincode = generatePincode();
+    return this.model.findByIdAndUpdate(id, { pincode }).exec();
+  }
+
 
   async findAll(filter: BaseQueryDto = {}, limit: number = 5, pageNumber: number = 0, sort: any = { _id: 'asc'}): Promise<CustomerDocument[]> {
     return this.model.find(buildFilter(filter, this.fields))
