@@ -76,7 +76,7 @@ export function Pincode({id, pincode, color, icon = 'refresh', allowGeneration =
                     inputRef={register()}
                     render={({ field: { onChange, value } }) => (
                       <ReactCodeInput
-                        type='number'
+                        type={allowGeneration ? 'number' : 'password'}
                         fields={fields}
                         name="pincode"
                         disabled={allowGeneration}
